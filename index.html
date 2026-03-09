@@ -196,8 +196,8 @@
     .category-general .shortcut-icon { color: #3b82f6; }
     .category-general .shortcut-card:hover .shortcut-icon { color: #60a5fa; }
     
-    .category-edit .shortcut-icon { color: #22c55e; }
-    .category-edit .shortcut-card:hover .shortcut-icon { color: #4ade80; }
+    .category-tools .shortcut-icon { color: #22c55e; }
+    .category-tools .shortcut-card:hover .shortcut-icon { color: #4ade80; }
     
     .category-paint .shortcut-icon { color: #a855f7; }
     .category-paint .shortcut-card:hover .shortcut-icon { color: #c084fc; }
@@ -205,11 +205,14 @@
     .category-animate .shortcut-icon { color: #f59e0b; }
     .category-animate .shortcut-card:hover .shortcut-icon { color: #fbbf24; }
     
-    .category-display .shortcut-icon { color: #06b6d4; }
-    .category-display .shortcut-card:hover .shortcut-icon { color: #22d3ee; }
+    .category-viewport .shortcut-icon { color: #06b6d4; }
+    .category-viewport .shortcut-card:hover .shortcut-icon { color: #22d3ee; }
     
-    .category-tools .shortcut-icon { color: #64748b; }
-    .category-tools .shortcut-card:hover .shortcut-icon { color: #94a3b8; }
+    .category-uv .shortcut-icon { color: #ec4899; }
+    .category-uv .shortcut-card:hover .shortcut-icon { color: #f472b6; }
+    
+    .category-outliner .shortcut-icon { color: #14b8a6; }
+    .category-outliner .shortcut-card:hover .shortcut-icon { color: #2dd4bf; }
     
     /* Essential/Best shortcuts special styling */
     .category-essential .shortcut-icon { 
@@ -284,6 +287,17 @@
         font-size: 0.875rem;
         line-height: 1.5;
         margin-bottom: 0.75rem;
+    }
+    
+    .context-note {
+        color: #fbbf24;
+        font-size: 0.75rem;
+        font-style: italic;
+        margin-top: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        background: rgba(245, 158, 11, 0.1);
+        border-radius: 0.25rem;
+        border-left: 2px solid #f59e0b;
     }
     
     .longform {
@@ -366,6 +380,15 @@
             margin-top: 200px;
         }
     }
+    
+    /* Total count display */
+    .count-display {
+        text-align: center;
+        padding: 1rem;
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-top: 1rem;
+    }
 </style>
 </head>
 <body>
@@ -373,25 +396,26 @@
 <div class="header">
     <div class="header-content">
         <div class="title">Blockbench Shortcuts</div>
-        <div class="subtitle">Complete keyboard reference with visual icons</div>
+        <div class="subtitle">96 verified core Blockbench shortcuts (no plugins)</div>
         
         <input 
             type="text" 
             class="search-box" 
             id="searchInput" 
-            placeholder="Search shortcuts (e.g., 'extrude', 'ctrl+e', 'paint')..."
+            placeholder="Search shortcuts (e.g., 'move', 'ctrl+s', 'paint')..."
             autocomplete="off"
         >
         
         <div class="categories" id="categories">
-            <button class="category-btn essential" onclick="filterCategory('essential')">⭐ Most Useful</button>
-            <button class="category-btn active" onclick="filterCategory('all')">All</button>
+            <button class="category-btn essential active" onclick="filterCategory('essential')">⭐ Most Useful</button>
+            <button class="category-btn" onclick="filterCategory('all')">All</button>
             <button class="category-btn" onclick="filterCategory('general')">General</button>
-            <button class="category-btn" onclick="filterCategory('edit')">Edit Mode</button>
+            <button class="category-btn" onclick="filterCategory('tools')">Tools</button>
             <button class="category-btn" onclick="filterCategory('paint')">Paint Mode</button>
             <button class="category-btn" onclick="filterCategory('animate')">Animate Mode</button>
-            <button class="category-btn" onclick="filterCategory('display')">Display</button>
-            <button class="category-btn" onclick="filterCategory('tools')">Tools</button>
+            <button class="category-btn" onclick="filterCategory('viewport')">Viewport</button>
+            <button class="category-btn" onclick="filterCategory('uv')">UV Editor</button>
+            <button class="category-btn" onclick="filterCategory('outliner')">Outliner</button>
         </div>
     </div>
 </div>
@@ -403,367 +427,184 @@
         <h3>No shortcuts found</h3>
         <p>Try a different search term</p>
     </div>
+    <div class="count-display" id="countDisplay"></div>
 </main>
 
 <!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <script>
-    // Essential/Most Useful Shortcuts (Curated List)
-    const essentialShortcuts = [
-        // Core Workflow
-        { name: "Undo", keys: ["Ctrl", "Z"], category: "essential", desc: "Reverses the last action", longform: "Edit menu → Undo", icon: "undo-2" },
-        { name: "Redo", keys: ["Ctrl", "Shift", "Z"], category: "essential", desc: "Restores the previously undone action", longform: "Edit menu → Redo", icon: "redo-2" },
-        { name: "Save", keys: ["Ctrl", "S"], category: "essential", desc: "Saves current project", longform: "File menu → Save", icon: "save" },
-        { name: "New Project", keys: ["Ctrl", "N"], category: "essential", desc: "Creates new empty project", longform: "File menu → New", icon: "file-plus" },
-        { name: "Open", keys: ["Ctrl", "O"], category: "essential", desc: "Opens existing project", longform: "File menu → Open", icon: "folder-open" },
-        
-        // Selection & Navigation
-        { name: "Select All", keys: ["Ctrl", "A"], category: "essential", desc: "Selects all elements in current mode", longform: "Edit menu → Select All", icon: "check-square" },
-        { name: "Deselect", keys: ["Ctrl", "Shift", "A"], category: "essential", desc: "Clears current selection", longform: "Edit menu → Deselect All", icon: "square" },
-        { name: "Focus Selection", keys: ["F"], category: "essential", desc: "Centers view on selection", longform: "View menu → Frame Selected", icon: "focus" },
-        { name: "Frame All", keys: ["Home"], category: "essential", desc: "Shows all objects", longform: "View menu → Frame All", icon: "maximize" },
-        { name: "Delete", keys: ["Delete"], category: "essential", desc: "Removes selected elements", longform: "Edit menu → Delete", icon: "trash-2" },
-        { name: "Duplicate", keys: ["Ctrl", "D"], category: "essential", desc: "Creates a copy of selected element", longform: "Edit menu → Duplicate", icon: "copy" },
-        
-        // Edit Mode Essentials
-        { name: "Extrude", keys: ["Ctrl", "E"], category: "essential", desc: "Extrudes selected faces outward", longform: "Select faces → Right-click → Extrude", icon: "move-up" },
-        { name: "Inset Faces", keys: ["Ctrl", "I"], category: "essential", desc: "Creates inset of selected faces", longform: "Select faces → Right-click → Inset Faces", icon: "move-down" },
-        { name: "Loop Cut", keys: ["Ctrl", "R"], category: "essential", desc: "Adds loop cut through mesh", longform: "Tool menu → Loop Cut", icon: "scissors" },
-        { name: "Bevel", keys: ["Ctrl", "B"], category: "essential", desc: "Creates bevel on selected edges", longform: "Select edges → Right-click → Bevel", icon: "minus-square" },
-        { name: "Create Face", keys: ["F"], category: "essential", desc: "Creates face from selected vertices/edges", longform: "Select 3+ vertices → Right-click → Create Face", icon: "plus" },
-        { name: "Merge Vertices", keys: ["Ctrl", "M"], category: "essential", desc: "Combines selected vertices", longform: "Select vertices → Right-click → Merge", icon: "merge" },
-        { name: "Subdivide", keys: ["Ctrl", "1"], category: "essential", desc: "Subdivides selected faces", longform: "Select faces → Right-click → Subdivide", icon: "grid-3x3" },
-        
-        // View & Display
-        { name: "Toggle Wireframe", keys: ["Z"], category: "essential", desc: "Switches solid/wireframe view", longform: "Viewport options → Wireframe", icon: "box-select" },
-        { name: "Toggle X-Ray", keys: ["Alt", "Z"], category: "essential", desc: "Toggles X-ray mode", longform: "Viewport options → X-Ray", icon: "scan-eye" },
-        { name: "Front View", keys: ["Numpad 1"], category: "essential", desc: "Front orthographic view", longform: "View menu → Front", icon: "arrow-up" },
-        { name: "Top View", keys: ["Numpad 7"], category: "essential", desc: "Top orthographic view", longform: "View menu → Top", icon: "arrow-down" },
-        { name: "Toggle Sidebar Left", keys: ["Tab"], category: "essential", desc: "Shows/hides left sidebar", longform: "View menu → Toggle Sidebar", icon: "panel-left" },
-        
-        // Animation Essentials
-        { name: "Play/Pause", keys: ["Space"], category: "essential", desc: "Starts/stops playback", longform: "Timeline → Play button", icon: "play" },
-        { name: "Add Keyframe", keys: ["I"], category: "essential", desc: "Inserts keyframe at current time", longform: "Animate menu → Add Keyframe", icon: "key" },
-        { name: "Next Frame", keys: ["Right"], category: "essential", desc: "Advances one frame", longform: "Timeline → Next frame button", icon: "step-forward" },
-        { name: "Previous Frame", keys: ["Left"], category: "essential", desc: "Goes back one frame", longform: "Timeline → Previous frame button", icon: "step-back" },
-        { name: "Auto Keyframe", keys: ["N"], category: "essential", desc: "Toggles auto-keyframe recording", longform: "Timeline → Auto Keyframe button", icon: "circle-dot" },
-        
-        // Paint Mode Essentials
-        { name: "Brush Tool", keys: ["P"], category: "essential", desc: "Activates paint brush", longform: "Toolbar → Paint Brush", icon: "paintbrush" },
-        { name: "Paint Bucket", keys: ["B"], category: "essential", desc: "Fills area with color", longform: "Toolbar → Paint Bucket", icon: "paint-bucket" },
-        { name: "Color Picker", keys: ["Alt"], category: "essential", desc: "Samples color (hold)", longform: "Hold Alt while clicking", icon: "pipette" },
-        { name: "Toggle UV Editor", keys: ["U"], category: "essential", desc: "Opens/closes UV editor", longform: "Window menu → UV Editor", icon: "layout-template" },
-        
-        // Transform Tools
-        { name: "Move Tool", keys: ["T"], category: "essential", desc: "Activates move/transform tool", longform: "Toolbar → Move Tool", icon: "move" },
-        { name: "Scale Tool", keys: ["R"], category: "essential", desc: "Activates scale tool", longform: "Toolbar → Scale Tool", icon: "maximize" },
-        { name: "Rotate Tool", keys: ["Y"], category: "essential", desc: "Activates rotate tool", longform: "Toolbar → Rotate Tool", icon: "rotate-cw" },
-        { name: "Vertex Snap", keys: ["Ctrl"], category: "essential", desc: "Hold to snap to vertices", longform: "Hold Ctrl while moving", icon: "magnet" },
-        
-        // Import/Export
-        { name: "Export", keys: ["Ctrl", "E"], category: "essential", desc: "Exports model to file", longform: "File → Export", icon: "upload" },
-        { name: "Import", keys: ["Ctrl", "Shift", "I"], category: "essential", desc: "Imports model from file", longform: "File → Import", icon: "download" },
-        { name: "Screenshot", keys: ["Ctrl", "P"], category: "essential", desc: "Captures screenshot of viewport", longform: "Preview menu → Screenshot Model", icon: "camera" }
+    // VERIFIED BLOCKBENCH SHORTCUTS - 96 TOTAL (no plugin shortcuts)
+    const shortcuts = [
+        // ESSENTIAL/MOST USEFUL (20 shortcuts)
+        { name: "Action Control", keys: ["F"], category: "essential", desc: "Search for any command or tool instantly", longform: "Press F to open Action Control search", icon: "search", essential: true },
+        { name: "Move Tool", keys: ["T"], category: "essential", desc: "Move/translate elements", longform: "Toolbar → Move Tool", icon: "move", essential: true },
+        { name: "Resize Tool", keys: ["R"], category: "essential", desc: "Scale/resize elements", longform: "Toolbar → Resize Tool", icon: "maximize", essential: true },
+        { name: "Rotate Tool", keys: ["Y"], category: "essential", desc: "Rotate elements", longform: "Toolbar → Rotate Tool", icon: "rotate-cw", essential: true },
+        { name: "Pivot Tool", keys: ["P"], category: "essential", desc: "Move pivot points (centers of rotation)", longform: "Toolbar → Pivot Tool", icon: "anchor", essential: true },
+        { name: "Vertex Snap", keys: ["V"], category: "essential", desc: "Connect vertices of two cubes", longform: "Toolbar → Vertex Snap", icon: "magnet", essential: true },
+        { name: "Toggle Tool", keys: ["Space"], category: "essential", desc: "Switch between Move↔Resize or Rotate↔Pivot", longform: "Press Space or double-click tool", icon: "switch-camera", essential: true },
+        { name: "Undo", keys: ["Ctrl", "Z"], category: "essential", desc: "Undo last action", longform: "Edit → Undo", icon: "undo-2", essential: true },
+        { name: "Redo", keys: ["Ctrl", "Y"], category: "essential", desc: "Redo undone action", longform: "Edit → Redo", icon: "redo-2", essential: true },
+        { name: "Save", keys: ["Ctrl", "S"], category: "essential", desc: "Save project", longform: "File → Save", icon: "save", essential: true },
+        { name: "New Project", keys: ["Ctrl", "N"], category: "essential", desc: "Create new project", longform: "File → New", icon: "file-plus", essential: true },
+        { name: "Open", keys: ["Ctrl", "O"], category: "essential", desc: "Open existing project", longform: "File → Open", icon: "folder-open", essential: true },
+        { name: "Duplicate", keys: ["Ctrl", "D"], category: "essential", desc: "Duplicate selection", longform: "Edit → Duplicate", icon: "copy", essential: true },
+        { name: "Delete", keys: ["Delete"], category: "essential", desc: "Delete selection", longform: "Edit → Delete", icon: "trash-2", essential: true },
+        { name: "Select All", keys: ["Ctrl", "A"], category: "essential", desc: "Select all elements", longform: "Edit → Select All", icon: "check-square", essential: true },
+        { name: "Toggle Sidebars", keys: ["Ctrl", "B"], category: "essential", desc: "Show/hide left and right sidebars", longform: "View → Toggle Sidebars", icon: "panel-left", essential: true },
+        { name: "Screenshot", keys: ["Ctrl", "P"], category: "essential", desc: "Take screenshot of viewport", longform: "Preview → Screenshot Model", icon: "camera", essential: true },
+        { name: "Play/Pause Animation", keys: ["Space"], category: "essential", desc: "Play or pause animation (in Animate tab)", longform: "Timeline play button", icon: "play", essential: true, context: "Animate Mode" },
+        { name: "Brush Tool", keys: ["B"], category: "essential", desc: "Paint brush", longform: "Paint toolbar → Brush", icon: "paintbrush", essential: true, context: "Paint Mode" },
+        { name: "Color Picker", keys: ["Alt"], category: "essential", desc: "Sample color (hold)", longform: "Hold Alt and click", icon: "pipette", essential: true, context: "Paint Mode" },
+
+        // GENERAL FILE & EDIT (17 shortcuts - removed Redo Alternative)
+        { name: "Save As", keys: ["Ctrl", "Shift", "S"], category: "general", desc: "Save with new name/location", longform: "File → Save As", icon: "save-all" },
+        { name: "Preferences", keys: ["Ctrl", ","], category: "general", desc: "Open preferences", longform: "File → Preferences", icon: "settings" },
+        { name: "Rename", keys: ["F2"], category: "general", desc: "Rename selected element", longform: "Right-click → Rename", icon: "type" },
+        { name: "Multi Select", keys: ["Ctrl", "Click"], category: "general", desc: "Add to selection (hold Ctrl)", longform: "Hold Ctrl while clicking", icon: "plus-circle" },
+        { name: "Select Group", keys: ["Shift", "Click"], category: "general", desc: "Select entire group in viewport", longform: "Hold Shift while clicking in viewport", icon: "layers" },
+        { name: "Range Select", keys: ["Shift", "Click"], category: "general", desc: "Select range in outliner", longform: "Hold Shift in outliner", icon: "list-start" },
+        { name: "Select by UV", keys: ["Ctrl", "Click"], category: "general", desc: "Select by UV island", longform: "Ctrl+click on UV island", icon: "image" },
+        { name: "Fine Adjustment", keys: ["Shift"], category: "general", desc: "Hold for fine adjustments on sliders", longform: "Hold Shift while sliding", icon: "gauge" },
+        { name: "Reset Value", keys: ["Double", "Click"], category: "general", desc: "Reset number to 0", longform: "Double-click numeric input", icon: "rotate-ccw" },
+        { name: "Export", keys: ["Ctrl", "E"], category: "general", desc: "Export model", longform: "File → Export", icon: "upload" },
+        { name: "Import", keys: ["Ctrl", "I"], category: "general", desc: "Import model/texture", longform: "File → Import", icon: "download" },
+        { name: "Close Tab", keys: ["Ctrl", "W"], category: "general", desc: "Close current tab", longform: "File → Close Tab", icon: "x" },
+        { name: "Next Tab", keys: ["Ctrl", "Tab"], category: "general", desc: "Switch to next tab", longform: "Tab bar", icon: "arrow-right" },
+        { name: "Previous Tab", keys: ["Ctrl", "Shift", "Tab"], category: "general", desc: "Switch to previous tab", longform: "Tab bar", icon: "arrow-left" },
+        { name: "Escape", keys: ["Esc"], category: "general", desc: "Close dialog or cancel action", longform: "Press Escape key", icon: "x-circle" },
+        { name: "Confirm", keys: ["Enter"], category: "general", desc: "Confirm value or action", longform: "Press Enter", icon: "check" },
+        { name: "Tab Navigation", keys: ["Tab"], category: "general", desc: "Switch between sidebar fields", longform: "Press Tab", icon: "arrow-right-left" },
+
+        // TOOLS & TRANSFORMATION (9 shortcuts - merged Alt entries)
+        { name: "Nudge 1 Unit", keys: ["Arrows"], category: "tools", desc: "Move selection 1 unit", longform: "Use arrow keys", icon: "move" },
+        { name: "Nudge 0.1 Units", keys: ["Ctrl", "Arrows"], category: "tools", desc: "Precise movement", longform: "Hold Ctrl + Arrow keys", icon: "move" },
+        { name: "Nudge 10 Units", keys: ["Shift", "Arrows"], category: "tools", desc: "Fast movement", longform: "Hold Shift + Arrow keys", icon: "move" },
+        { name: "Alt Modifiers", keys: ["Alt"], category: "tools", desc: "Scale from Center / Ignore Snapping", longform: "Hold Alt while scaling or moving", icon: "maximize" },
+        { name: "Precision Mode", keys: ["Shift"], category: "tools", desc: "Slow movement for precision", longform: "Hold Shift while moving", icon: "gauge" },
+        { name: "Snap to Increments", keys: ["Ctrl"], category: "tools", desc: "Snap to grid increments", longform: "Hold Ctrl while moving", icon: "magnet" },
+        { name: "Toggle Visibility", keys: ["V"], category: "tools", desc: "Hide/show selection", longform: "Outliner visibility toggle", icon: "eye", context: "Outliner" },
+        { name: "Invert Visibility", keys: ["I"], category: "tools", desc: "Hide everything else", longform: "Outliner → Invert Visibility", icon: "eye-off" },
+        { name: "Unhide All", keys: ["U"], category: "tools", desc: "Unhide all elements", longform: "Outliner → Unhide All", icon: "eye" },
+
+        // PAINT MODE (13 shortcuts)
+        { name: "Paint Brush", keys: ["B"], category: "paint", desc: "Paint brush tool", longform: "Paint toolbar", icon: "paintbrush" },
+        { name: "Eraser", keys: ["E"], category: "paint", desc: "Erase paint", longform: "Paint toolbar", icon: "eraser" },
+        { name: "Paint Bucket", keys: ["G"], category: "paint", desc: "Fill areas with color", longform: "Paint toolbar → Paint Bucket", icon: "paint-bucket" },
+        { name: "Color Picker Tool", keys: ["P"], category: "paint", desc: "Select color picker tool", longform: "Paint toolbar or press Space", icon: "pipette" },
+        { name: "Draw Straight Line", keys: ["Shift", "Drag"], category: "paint", desc: "Draw straight lines", longform: "Hold Shift while dragging", icon: "minus" },
+        { name: "Mirror Paint X", keys: ["Shift", "X"], category: "paint", desc: "Toggle X-axis mirror painting", longform: "Paint toolbar → Mirror X", icon: "flip-horizontal" },
+        { name: "Lock Alpha", keys: ["Shift", "A"], category: "paint", desc: "Prevent painting on transparent areas", longform: "Paint toolbar → Lock Alpha", icon: "lock" },
+        { name: "Increase Brush Size", keys: ["]"], category: "paint", desc: "Make brush larger", longform: "Press ] key", icon: "plus-circle" },
+        { name: "Decrease Brush Size", keys: ["["], category: "paint", desc: "Make brush smaller", longform: "Press [ key", icon: "minus-circle" },
+        { name: "Open Color Palette", keys: ["K"], category: "paint", desc: "Open color palette panel", longform: "Color Panel → Palette", icon: "palette" },
+        { name: "Toggle Painting Grid", keys: ["G"], category: "paint", desc: "Show/hide pixel grid", longform: "Paint toolbar → Painting Grid", icon: "grid-3x3" },
+        { name: "Copy Color Hex", keys: ["Ctrl", "Shift", "C"], category: "paint", desc: "Copy color hex code", longform: "Color Panel", icon: "copy" },
+        { name: "Swap Colors", keys: ["X"], category: "paint", desc: "Swap foreground/background color", longform: "Press X key", icon: "arrow-left-right" },
+
+        // ANIMATE MODE (12 shortcuts - includes dedicated Play/Pause)
+        { name: "Play/Pause", keys: ["Space"], category: "animate", desc: "Play or pause animation", longform: "Timeline play button", icon: "play" },
+        { name: "Stop", keys: ["S"], category: "animate", desc: "Stop animation", longform: "Timeline stop button", icon: "square" },
+        { name: "Previous Frame", keys: ["Ctrl", "Left"], category: "animate", desc: "Jump to previous keyframe", longform: "Timeline controls", icon: "skip-back" },
+        { name: "Next Frame", keys: ["Ctrl", "Right"], category: "animate", desc: "Jump to next keyframe", longform: "Timeline controls", icon: "skip-forward" },
+        { name: "First Frame", keys: ["Shift", "Left"], category: "animate", desc: "Jump to start of animation", longform: "Timeline controls", icon: "arrow-left-to-line" },
+        { name: "Last Frame", keys: ["Shift", "Right"], category: "animate", desc: "Jump to end of animation", longform: "Timeline controls", icon: "arrow-right-to-line" },
+        { name: "Toggle Graph Editor", keys: ["G"], category: "animate", desc: "Switch Keyframe/Graph view", longform: "Timeline header", icon: "activity" },
+        { name: "Clear Timeline", keys: ["Shift", "Delete"], category: "animate", desc: "Hide unselected bones from timeline", longform: "Timeline header", icon: "x" },
+        { name: "Add Marker", keys: ["M"], category: "animate", desc: "Add timeline marker", longform: "Timeline header", icon: "map-pin" },
+        { name: "Insert Keyframe", keys: ["I"], category: "animate", desc: "Insert keyframe at current time", longform: "Timeline → Insert Keyframe", icon: "key" },
+        { name: "Delete Keyframe", keys: ["Delete"], category: "animate", desc: "Remove selected keyframe", longform: "Select keyframe → Delete", icon: "trash-2" },
+        { name: "Copy/Paste Keyframe", keys: ["Ctrl", "C", "/", "V"], category: "animate", desc: "Copy and paste keyframes", longform: "Select keyframe → Ctrl+C/V", icon: "copy" },
+
+        // VIEWPORT & DISPLAY (10 shortcuts)
+        { name: "Toggle View Mode", keys: ["Z"], category: "viewport", desc: "Toggle Textured/Solid/Wireframe", longform: "Viewport options", icon: "box-select" },
+        { name: "Toggle Grid", keys: ["G"], category: "viewport", desc: "Show/hide background grid", longform: "Display menu", icon: "grid-3x3" },
+        { name: "Toggle Ground Plane", keys: ["Alt", "G"], category: "viewport", desc: "Show/hide ground plane", longform: "Display menu", icon: "plane" },
+        { name: "Toggle Guides", keys: ["Shift", "G"], category: "viewport", desc: "Show/hide guides", longform: "Display menu", icon: "ruler" },
+        { name: "Front View", keys: ["Numpad", "1"], category: "viewport", desc: "Front orthographic view", longform: "View menu", icon: "arrow-up" },
+        { name: "Top View", keys: ["Numpad", "7"], category: "viewport", desc: "Top orthographic view", longform: "View menu", icon: "arrow-down" },
+        { name: "Side View", keys: ["Numpad", "3"], category: "viewport", desc: "Side orthographic view", longform: "View menu", icon: "arrow-right" },
+        { name: "Zoom", keys: ["Scroll"], category: "viewport", desc: "Zoom in/out", longform: "Scroll wheel", icon: "zoom-in" },
+        { name: "Orbit Camera", keys: ["Middle", "Drag"], category: "viewport", desc: "Rotate camera around model", longform: "Middle click + drag", icon: "rotate-3d" },
+        { name: "Pan Camera", keys: ["Right", "Drag"], category: "viewport", desc: "Pan camera view", longform: "Right click + drag", icon: "move" },
+
+        // UV EDITOR (8 shortcuts)
+        { name: "Toggle UV Editor", keys: ["U"], category: "uv", desc: "Open/close UV editor", longform: "Window menu", icon: "layout-template" },
+        { name: "Rotate UV 90°", keys: ["R"], category: "uv", desc: "Rotate UV by 90 degrees", longform: "UV Editor → Rotate", icon: "rotate-cw" },
+        { name: "Flip UV Horizontal", keys: ["H"], category: "uv", desc: "Flip UV horizontally", longform: "UV Editor → Flip H", icon: "flip-horizontal" },
+        { name: "Flip UV Vertical", keys: ["V"], category: "uv", desc: "Flip UV vertically", longform: "UV Editor → Flip V", icon: "flip-vertical" },
+        { name: "Copy UV", keys: ["Ctrl", "Alt", "C"], category: "uv", desc: "Copy UV map", longform: "UV Editor", icon: "copy" },
+        { name: "Paste UV", keys: ["Ctrl", "Alt", "V"], category: "uv", desc: "Paste UV map", longform: "UV Editor", icon: "clipboard-paste" },
+        { name: "Nudge UV 1px", keys: ["Arrows"], category: "uv", desc: "Move UV by 1 pixel", longform: "Arrow keys in UV Editor", icon: "move" },
+        { name: "Auto UV", keys: ["A"], category: "uv", desc: "Auto-generate UV mapping", longform: "UV Editor → Auto UV", icon: "sparkles" },
+
+        // OUTLINER (7 shortcuts)
+        { name: "Group Selection", keys: ["Ctrl", "G"], category: "outliner", desc: "Group selected elements", longform: "Outliner → Group", icon: "folder" },
+        { name: "Wrap in Group", keys: ["Ctrl", "Shift", "G"], category: "outliner", desc: "Wrap selection in new group", longform: "Outliner → Wrap in Group", icon: "folder-plus" },
+        { name: "Ungroup", keys: ["Ctrl", "Shift", "U"], category: "outliner", desc: "Ungroup selected group", longform: "Outliner → Ungroup", icon: "folder-minus" },
+        { name: "Move Up", keys: ["PageUp"], category: "outliner", desc: "Move up in outliner", longform: "Outliner navigation", icon: "arrow-up" },
+        { name: "Move Down", keys: ["PageDown"], category: "outliner", desc: "Move down in outliner", longform: "Outliner navigation", icon: "arrow-down" },
+        { name: "Move to Top", keys: ["Home"], category: "outliner", desc: "Move to top of outliner", longform: "Outliner navigation", icon: "arrow-up-to-line" },
+        { name: "Move to Bottom", keys: ["End"], category: "outliner", desc: "Move to bottom of outliner", longform: "Outliner navigation", icon: "arrow-down-to-line" }
     ];
 
-    // Complete Blockbench Shortcuts Database with Lucide Icons
-    const allShortcuts = [
-        // GENERAL
-        { name: "Undo", keys: ["Ctrl", "Z"], category: "general", desc: "Reverses the last action", longform: "Edit menu → Undo", icon: "undo-2" },
-        { name: "Redo", keys: ["Ctrl", "Shift", "Z"], category: "general", desc: "Restores the previously undone action", longform: "Edit menu → Redo", icon: "redo-2" },
-        { name: "Delete", keys: ["Delete"], category: "general", desc: "Removes selected elements", longform: "Edit menu → Delete or right-click → Delete", icon: "trash-2" },
-        { name: "Select All", keys: ["Ctrl", "A"], category: "general", desc: "Selects all elements in current mode", longform: "Edit menu → Select All", icon: "check-square" },
-        { name: "Deselect", keys: ["Ctrl", "Shift", "A"], category: "general", desc: "Clears current selection", longform: "Edit menu → Deselect All", icon: "square" },
-        { name: "Invert Selection", keys: ["Ctrl", "I"], category: "general", desc: "Inverts the current selection", longform: "Select menu → Invert Selection", icon: "refresh-cw" },
-        { name: "Duplicate", keys: ["Ctrl", "D"], category: "general", desc: "Creates a copy of selected element", longform: "Edit menu → Duplicate", icon: "copy" },
-        { name: "Screenshot", keys: ["Ctrl", "P"], category: "general", desc: "Captures screenshot of viewport", longform: "Preview menu (3 dots) → Screenshot Model", icon: "camera" },
-        { name: "New Project", keys: ["Ctrl", "N"], category: "general", desc: "Creates new empty project", longform: "File menu → New", icon: "file-plus" },
-        { name: "Open", keys: ["Ctrl", "O"], category: "general", desc: "Opens existing project", longform: "File menu → Open", icon: "folder-open" },
-        { name: "Save", keys: ["Ctrl", "S"], category: "general", desc: "Saves current project", longform: "File menu → Save", icon: "save" },
-        { name: "Save As", keys: ["Ctrl", "Shift", "S"], category: "general", desc: "Saves with new name/location", longform: "File menu → Save As", icon: "save-all" },
-        { name: "Preferences", keys: ["Ctrl", ","], category: "general", desc: "Opens settings dialog", longform: "File menu → Preferences", icon: "settings" },
-        { name: "Cut", keys: ["Ctrl", "X"], category: "general", desc: "Cuts selected elements to clipboard", longform: "Edit menu → Cut", icon: "scissors" },
-        { name: "Copy", keys: ["Ctrl", "C"], category: "general", desc: "Copies selected elements to clipboard", longform: "Edit menu → Copy", icon: "copy" },
-        { name: "Paste", keys: ["Ctrl", "V"], category: "general", desc: "Pastes elements from clipboard", longform: "Edit menu → Paste", icon: "clipboard-paste" },
-        { name: "History", keys: ["Ctrl", "Shift", "H"], category: "general", desc: "Shows action history", longform: "Edit menu → History", icon: "history" },
-        { name: "Search", keys: ["Ctrl", "F"], category: "general", desc: "Search within project", longform: "Edit menu → Search", icon: "search" },
-        { name: "Find", keys: ["Ctrl", "G"], category: "general", desc: "Find next occurrence", longform: "Edit menu → Find", icon: "file-search" },
-        { name: "Replace", keys: ["Ctrl", "H"], category: "general", desc: "Find and replace", longform: "Edit menu → Replace", icon: "replace" },
-        { name: "Select All by Trait", keys: ["Ctrl", "Shift", "G"], category: "general", desc: "Selects all with similar properties", longform: "Select menu → Select All by Trait", icon: "filter" },
-        { name: "Random Select", keys: ["Ctrl", "Alt", "R"], category: "general", desc: "Randomly selects elements", longform: "Select menu → Random Select", icon: "shuffle" },
-        { name: "Select Boundary", keys: ["Ctrl", "Alt", "B"], category: "general", desc: "Selects boundary elements", longform: "Select menu → Select Boundary", icon: "square-dashed" },
-        { name: "Select Sharp Edges", keys: ["Ctrl", "Shift", "E"], category: "general", desc: "Selects edges by sharpness", longform: "Select menu → Select Sharp Edges", icon: "triangle" },
-        { name: "Select Linked", keys: ["Ctrl", "L"], category: "general", desc: "Selects all connected geometry", longform: "Select menu → Select Linked", icon: "link" },
-        { name: "Select Similar", keys: ["Shift", "G"], category: "general", desc: "Selects similar elements by type", longform: "Select menu → Select Similar", icon: "layers" },
-        { name: "Axis", keys: ["Ctrl", "Alt", "A"], category: "general", desc: "Sets transform axis", longform: "Transform menu → Axis", icon: "move-3d" },
-        { name: "Cursor", keys: ["Ctrl", "Alt", "C"], category: "general", desc: "Sets cursor to selection", longform: "Cursor menu → Cursor to Selection", icon: "mouse-pointer-2" },
-        { name: "Origin", keys: ["Ctrl", "Alt", "Shift", "C"], category: "general", desc: "Sets origin to cursor", longform: "Origin menu → Origin to 3D Cursor", icon: "target" },
-        { name: "Snap", keys: ["Shift", "S"], category: "general", desc: "Snap menu for precise positioning", longform: "Snap menu → Various snap options", icon: "magnet" },
-        { name: "Vertex", keys: ["1"], category: "general", desc: "Vertex select mode", longform: "Mode selector → Vertex", icon: "dot" },
-        { name: "Edge", keys: ["2"], category: "general", desc: "Edge select mode", longform: "Mode selector → Edge", icon: "minus" },
-        { name: "Face", keys: ["3"], category: "general", desc: "Face select mode", longform: "Mode selector → Face", icon: "square" },
-        { name: "Mesh", keys: ["Ctrl", "Tab"], category: "general", desc: "Toggle edit/object mode", longform: "Mode selector → Edit/Object Mode", icon: "box" },
-        { name: "Texture", keys: ["Shift", "F10"], category: "general", desc: "Toggle texture view", longform: "Viewport → Texture", icon: "image" },
-        { name: "Material", keys: ["Shift", "F11"], category: "general", desc: "Toggle material view", longform: "Viewport → Material", icon: "palette" },
-        { name: "Outliner", keys: ["Shift", "F9"], category: "general", desc: "Toggle outliner panel", longform: "Window → Outliner", icon: "list-tree" },
-        { name: "Properties", keys: ["Shift", "F7"], category: "general", desc: "Toggle properties panel", longform: "Window → Properties", icon: "sliders-horizontal" },
-        { name: "Timeline", keys: ["Shift", "F12"], category: "general", desc: "Toggle timeline panel", longform: "Window → Timeline", icon: "film" },
-        { name: "Dope Sheet", keys: ["Shift", "F2"], category: "general", desc: "Toggle dope sheet", longform: "Window → Dope Sheet", icon: "sheet" },
-        { name: "NLA Editor", keys: ["Shift", "F3"], category: "general", desc: "Toggle NLA editor", longform: "Window → NLA Editor", icon: "git-branch" },
-        { name: "Text Editor", keys: ["Shift", "F5"], category: "general", desc: "Toggle text editor", longform: "Window → Text Editor", icon: "file-text" },
-        { name: "Python Console", keys: ["Shift", "F4"], category: "general", desc: "Toggle Python console", longform: "Window → Python Console", icon: "terminal" },
-        { name: "Info", keys: ["Shift", "F8"], category: "general", desc: "Toggle info panel", longform: "Window → Info", icon: "info" },
-        { name: "Toolbar", keys: ["T"], category: "general", desc: "Toggle toolbar", longform: "Window → Toolbar", icon: "panel-left" },
-        { name: "Status Bar", keys: ["Shift", "F10"], category: "general", desc: "Toggle status bar", longform: "Window → Status Bar", icon: "activity" },
-        { name: "Area", keys: ["Ctrl", "Alt", "Q"], category: "general", desc: "Toggle quad view", longform: "View → Area → Toggle Quad View", icon: "layout-grid" },
-        { name: "Split", keys: ["Ctrl", "Alt", "S"], category: "general", desc: "Split area", longform: "View → Area → Split Area", icon: "columns" },
-        { name: "Join", keys: ["Ctrl", "Alt", "J"], category: "general", desc: "Join areas", longform: "View → Area → Join Areas", icon: "combine" },
-        { name: "Swap", keys: ["Ctrl", "Alt", "W"], category: "general", desc: "Swap areas", longform: "View → Area → Swap Areas", icon: "arrow-left-right" },
-        { name: "Maximize", keys: ["Ctrl", "Space"], category: "general", desc: "Maximize area", longform: "View → Area → Maximize Area", icon: "maximize-2" },
-        { name: "Minimize", keys: ["Ctrl", "Alt", "Space"], category: "general", desc: "Minimize area", longform: "View → Area → Minimize Area", icon: "minimize-2" },
-        { name: "Screen", keys: ["Ctrl", "Right"], category: "general", desc: "Next screen layout", longform: "Screen → Next", icon: "monitor" },
-        { name: "Scene", keys: ["Ctrl", "Left"], category: "general", desc: "Previous screen layout", longform: "Screen → Previous", icon: "monitor-play" },
-        { name: "View Selected", keys: ["Numpad ."], category: "general", desc: "View selected object", longform: "View → View Selected", icon: "focus" },
-        { name: "View Lock", keys: ["Shift", "Numpad ."], category: "general", desc: "Lock view to selected", longform: "View → Lock to Selected", icon: "lock" },
-        { name: "View Center", keys: ["Alt", "Home"], category: "general", desc: "Center view to cursor", longform: "View → Center View to Cursor", icon: "crosshair" },
-        { name: "View Cursor", keys: ["Alt", "F"], category: "general", desc: "View to cursor", longform: "View → View to Cursor", icon: "mouse-pointer-click" },
-        { name: "View Bookmarks", keys: ["Ctrl", "Alt", "Q"], category: "general", desc: "View bookmarks", longform: "View → Bookmarks", icon: "bookmark" },
-        { name: "Camera", keys: ["Numpad 0"], category: "general", desc: "Camera view", longform: "View → Camera", icon: "video" },
-        { name: "Camera View", keys: ["Ctrl", "Numpad 0"], category: "general", desc: "Set camera to view", longform: "View → Camera → Set Active Camera", icon: "camera-off" },
-        { name: "Camera Set", keys: ["Ctrl", "Alt", "Numpad 0"], category: "general", desc: "Set view to camera", longform: "View → Camera → Set Camera to View", icon: "camera" },
-        { name: "Border", keys: ["Shift", "B"], category: "general", desc: "Render border", longform: "View → Render Border", icon: "square-dashed-bottom" },
-        { name: "Clip", keys: ["Alt", "B"], category: "general", desc: "Clip border", longform: "View → Clip Border", icon: "crop" },
-        { name: "Render", keys: ["F12"], category: "general", desc: "Render image", longform: "Render → Render Image", icon: "image-plus" },
-        { name: "Render Animation", keys: ["Ctrl", "F12"], category: "general", desc: "Render animation", longform: "Render → Render Animation", icon: "clapperboard" },
-        { name: "Render Window", keys: ["F11"], category: "general", desc: "Show render window", longform: "Render → Show Render Window", icon: "picture-in-picture" },
-        { name: "Play Animation", keys: ["Ctrl", "F11"], category: "general", desc: "Play rendered animation", longform: "Render → Play Rendered Animation", icon: "play-circle" },
-        { name: "Reverse", keys: ["Ctrl", "Shift", "F11"], category: "general", desc: "Reverse animation", longform: "Render → Reverse Animation", icon: "skip-back" },
-        { name: "Previous Keyframe", keys: ["Ctrl", "PageUp"], category: "general", desc: "Jump to previous keyframe", longform: "Timeline → Previous Keyframe", icon: "chevron-left" },
-        { name: "Next Keyframe", keys: ["Ctrl", "PageDown"], category: "general", desc: "Jump to next keyframe", longform: "Timeline → Next Keyframe", icon: "chevron-right" },
-        { name: "Jump", keys: ["Ctrl", "Shift", "PageUp"], category: "general", desc: "Jump to keyframe", longform: "Timeline → Jump to Keyframe", icon: "skip-forward" },
-        { name: "Start", keys: ["Shift", "Ctrl", "PageUp"], category: "general", desc: "Go to start", longform: "Timeline → Go to Start", icon: "skip-back" },
-        { name: "End", keys: ["Shift", "Ctrl", "PageDown"], category: "general", desc: "Go to end", longform: "Timeline → Go to End", icon: "skip-forward" },
-        { name: "Set Start", keys: ["Ctrl", "Home"], category: "general", desc: "Set start frame", longform: "Timeline → Set Start Frame", icon: "arrow-left-to-line" },
-        { name: "Set End", keys: ["Ctrl", "End"], category: "general", desc: "Set end frame", longform: "Timeline → Set End Frame", icon: "arrow-right-to-line" },
-        { name: "Preview", keys: ["Shift", "F11"], category: "general", desc: "Preview range", longform: "Timeline → Preview Range", icon: "eye" },
-        { name: "Audio", keys: ["Ctrl", "M"], category: "general", desc: "Mute audio", longform: "Timeline → Mute Audio", icon: "volume-x" },
-        { name: "Scrub", keys: ["Shift", "F12"], category: "general", desc: "Audio scrubbing", longform: "Timeline → Audio Scrubbing", icon: "music" },
-        { name: "Snap Frame", keys: ["Shift", "Tab"], category: "general", desc: "Snap to frame", longform: "Timeline → Snap to Frame", icon: "align-center" },
-        { name: "Keying Set", keys: ["Ctrl", "Shift", "K"], category: "general", desc: "Set keying set", longform: "Timeline → Keying Set", icon: "key" },
-        { name: "Insert Key", keys: ["Ctrl", "I"], category: "general", desc: "Insert keyframe", longform: "Timeline → Insert Keyframe", icon: "plus-circle" },
-        { name: "Delete Key", keys: ["Ctrl", "Alt", "I"], category: "general", desc: "Delete keyframe", longform: "Timeline → Delete Keyframe", icon: "minus-circle" },
-        { name: "Clear Key", keys: ["Ctrl", "Alt", "Shift", "I"], category: "general", desc: "Clear keyframe", longform: "Timeline → Clear Keyframe", icon: "x-circle" },
-        { name: "Copy Key", keys: ["Ctrl", "Shift", "C"], category: "general", desc: "Copy keyframe", longform: "Timeline → Copy Keyframe", icon: "copy" },
-        { name: "Paste Key", keys: ["Ctrl", "Shift", "V"], category: "general", desc: "Paste keyframe", longform: "Timeline → Paste Keyframe", icon: "clipboard-paste" },
-        { name: "Paste Flipped", keys: ["Ctrl", "Shift", "Alt", "V"], category: "general", desc: "Paste flipped", longform: "Timeline → Paste Flipped", icon: "flip-horizontal" },
-        { name: "Sample", keys: ["Shift", "Alt", "O"], category: "general", desc: "Sample keyframes", longform: "Timeline → Sample Keyframes", icon: "activity" },
-        { name: "Prop Dest", keys: ["Ctrl", "Alt", "C"], category: "general", desc: "Copy to selected", longform: "Properties → Copy to Selected", icon: "copy-plus" },
-        { name: "Prop Next", keys: ["Ctrl", "Alt", "V"], category: "general", desc: "Paste to selected", longform: "Properties → Paste to Selected", icon: "clipboard-list" },
-        { name: "Keyframe", keys: ["Ctrl", "Alt", "K"], category: "general", desc: "Keyframe properties", longform: "Properties → Keyframe", icon: "key-round" },
-        { name: "Insert Frame", keys: ["Ctrl", "Alt", "F"], category: "general", desc: "Insert frame", longform: "Timeline → Insert Frame", icon: "plus-square" },
-        { name: "Delete Frame", keys: ["Ctrl", "Alt", "Shift", "F"], category: "general", desc: "Delete frame", longform: "Timeline → Delete Frame", icon: "minus-square" },
-        { name: "Clean", keys: ["Ctrl", "Alt", "C"], category: "general", desc: "Clean keyframes", longform: "Timeline → Clean Keyframes", icon: "sparkles" },
-        { name: "Smooth", keys: ["Ctrl", "Alt", "S"], category: "general", desc: "Smooth keyframes", longform: "Timeline → Smooth Keyframes", icon: "waves" },
-        { name: "Clean Channels", keys: ["Ctrl", "Alt", "Shift", "C"], category: "general", desc: "Clean channels", longform: "Timeline → Clean Channels", icon: "filter-x" },
-        { name: "Mute", keys: ["M"], category: "general", desc: "Mute channel", longform: "Timeline → Mute Channel", icon: "volume-off" },
-        { name: "Unmute", keys: ["Alt", "M"], category: "general", desc: "Unmute channel", longform: "Timeline → Unmute Channel", icon: "volume-2" },
-        { name: "Hide Cursor", keys: ["H"], category: "general", desc: "Hide cursor", longform: "View → Hide Cursor", icon: "eye-off" },
-        { name: "Show Cursor", keys: ["Alt", "H"], category: "general", desc: "Show cursor", longform: "View → Show Cursor", icon: "eye" },
-        { name: "Update", keys: ["Ctrl", "U"], category: "general", desc: "Update scene", longform: "Scene → Update", icon: "refresh-cw" },
-        { name: "Refresh", keys: ["F5"], category: "general", desc: "Refresh scene", longform: "Scene → Refresh", icon: "rotate-cw" },
-        { name: "Reload", keys: ["Ctrl", "R"], category: "general", desc: "Reload file", longform: "File → Reload", icon: "rotate-ccw" },
-        { name: "Debug", keys: ["Ctrl", "Shift", "D"], category: "general", desc: "Debug mode", longform: "Window → Debug", icon: "bug" },
-        { name: "Factory", keys: ["Ctrl", "Shift", "F"], category: "general", desc: "Load factory settings", longform: "File → Defaults → Load Factory Settings", icon: "factory" },
-        { name: "Save User", keys: ["Ctrl", "U"], category: "general", desc: "Save user settings", longform: "File → Defaults → Save User Settings", icon: "user-plus" },
-        { name: "Load User", keys: ["Ctrl", "Shift", "U"], category: "general", desc: "Load user settings", longform: "File → Defaults → Load User Settings", icon: "user" },
-        { name: "Addon", keys: ["Ctrl", "Alt", "U"], category: "general", desc: "User preferences", longform: "Edit → Preferences → Add-ons", icon: "puzzle" },
-        { name: "Theme", keys: ["Ctrl", "Shift", "T"], category: "general", desc: "Theme settings", longform: "Edit → Preferences → Themes", icon: "paintbrush" },
-        { name: "Input", keys: ["Ctrl", "Shift", "I"], category: "general", desc: "Input settings", longform: "Edit → Preferences → Input", icon: "keyboard" },
-        { name: "Keymap", keys: ["Ctrl", "Shift", "K"], category: "general", desc: "Keymap settings", longform: "Edit → Preferences → Keymap", icon: "map" },
-        { name: "Navigation", keys: ["Ctrl", "Shift", "N"], category: "general", desc: "Navigation settings", longform: "Edit → Preferences → Navigation", icon: "compass" },
-        { name: "System", keys: ["Ctrl", "Shift", "S"], category: "general", desc: "System settings", longform: "Edit → Preferences → System", icon: "cpu" },
-        { name: "File Paths", keys: ["Ctrl", "Shift", "F"], category: "general", desc: "File paths settings", longform: "Edit → Preferences → File Paths", icon: "folder-tree" },
-        { name: "Save Prefs", keys: ["Ctrl", "Alt", "U"], category: "general", desc: "Save preferences", longform: "Edit → Preferences → Save Preferences", icon: "save" },
-        { name: "Load Prefs", keys: ["Ctrl", "Alt", "Shift", "U"], category: "general", desc: "Load preferences", longform: "Edit → Preferences → Load Preferences", icon: "download" },
-        
-        // EDIT MODE
-        { name: "Extrude", keys: ["Ctrl", "E"], category: "edit", desc: "Extrudes selected faces outward", longform: "Select faces → Right-click → Extrude", icon: "move-up" },
-        { name: "Inset Faces", keys: ["Ctrl", "I"], category: "edit", desc: "Creates inset of selected faces", longform: "Select faces → Right-click → Inset Faces", icon: "move-down" },
-        { name: "Loop Cut", keys: ["Ctrl", "R"], category: "edit", desc: "Adds loop cut through mesh", longform: "Tool menu → Loop Cut", icon: "scissors" },
-        { name: "Bevel", keys: ["Ctrl", "B"], category: "edit", desc: "Creates bevel on selected edges", longform: "Select edges → Right-click → Bevel", icon: "minus-square" },
-        { name: "Merge Vertices", keys: ["Ctrl", "M"], category: "edit", desc: "Combines selected vertices", longform: "Select vertices → Right-click → Merge", icon: "merge" },
-        { name: "Create Face", keys: ["F"], category: "edit", desc: "Creates face from selected vertices/edges", longform: "Select 3+ vertices → Right-click → Create Face", icon: "plus" },
-        { name: "Subdivide", keys: ["Ctrl", "1"], category: "edit", desc: "Subdivides selected faces", longform: "Select faces → Right-click → Subdivide", icon: "grid-3x3" },
-        { name: "Flip Normals", keys: ["Ctrl", "Shift", "N"], category: "edit", desc: "Reverses face normal directions", longform: "Select faces → Mesh → Normals → Flip", icon: "flip-horizontal" },
-        { name: "Recalculate Normals", keys: ["Shift", "N"], category: "edit", desc: "Auto-fixes face normals", longform: "Select mesh → Mesh → Normals → Recalculate", icon: "refresh-cw" },
-        { name: "Smooth Vertices", keys: ["Ctrl", "V"], category: "edit", desc: "Averages vertex positions", longform: "Select vertices → Tool menu → Smooth", icon: "waves" },
-        { name: "Make Planar", keys: ["Ctrl", "Shift", "P"], category: "edit", desc: "Flattens vertices to plane", longform: "Select vertices → Tool menu → Make Planar", icon: "layout" },
-        { name: "Hide Selected", keys: ["H"], category: "edit", desc: "Hides selected elements", longform: "View menu → Hide Selected", icon: "eye-off" },
-        { name: "Unhide All", keys: ["Alt", "H"], category: "edit", desc: "Reveals all hidden elements", longform: "View menu → Unhide All", icon: "eye" },
-        { name: "Toggle X-Ray", keys: ["Alt", "Z"], category: "edit", desc: "Toggles X-ray mode", longform: "Viewport options → X-Ray", icon: "scan-eye" },
-        { name: "Proportional Editing", keys: ["O"], category: "edit", desc: "Toggles soft selection", longform: "Toolbar → Proportional Editing", icon: "circle-dot" },
-        { name: "Select Loop", keys: ["Alt", "Click"], category: "edit", desc: "Selects edge loop", longform: "Alt + Click on edge", icon: "repeat" },
-        { name: "Grow Selection", keys: ["Ctrl", "+"], category: "edit", desc: "Expands selection outward", longform: "Select menu → Grow Selection", icon: "maximize" },
-        { name: "Shrink Selection", keys: ["Ctrl", "-"], category: "edit", desc: "Contracts selection inward", longform: "Select menu → Shrink Selection", icon: "minimize" },
-        { name: "Bridge Edge Loops", keys: ["Ctrl", "Shift", "B"], category: "edit", desc: "Creates faces between loops", longform: "Select 2 loops → Edge → Bridge Loops", icon: "git-merge" },
-        { name: "Rip Region", keys: ["R"], category: "edit", desc: "Rips mesh at selection", longform: "Select vertices → Mesh → Rip", icon: "tear" },
-        { name: "Separate", keys: ["Ctrl", "P"], category: "edit", desc: "Separates selection to new object", longform: "Select → Mesh → Separate", icon: "split" },
-        { name: "Symmetrize", keys: ["Ctrl", "Shift", "M"], category: "edit", desc: "Makes mesh symmetrical", longform: "Tool menu → Symmetrize", icon: "flip-horizontal" },
-        { name: "Mirror X", keys: ["Ctrl", "M", "X"], category: "edit", desc: "Mirrors across X axis", longform: "Mesh → Mirror → X Axis", icon: "flip-horizontal" },
-        { name: "Mirror Y", keys: ["Ctrl", "M", "Y"], category: "edit", desc: "Mirrors across Y axis", longform: "Mesh → Mirror → Y Axis", icon: "flip-vertical" },
-        { name: "Mirror Z", keys: ["Ctrl", "M", "Z"], category: "edit", desc: "Mirrors across Z axis", longform: "Mesh → Mirror → Z Axis", icon: "flip-horizontal" },
-        
-        // PAINT MODE
-        { name: "Brush Tool", keys: ["P"], category: "paint", desc: "Activates paint brush", longform: "Toolbar → Paint Brush", icon: "paintbrush" },
-        { name: "Paint Bucket", keys: ["B"], category: "paint", desc: "Fills area with color", longform: "Toolbar → Paint Bucket", icon: "paint-bucket" },
-        { name: "Eraser", keys: ["E"], category: "paint", desc: "Removes paint/alpha", longform: "Toolbar → Eraser", icon: "eraser" },
-        { name: "Color Picker", keys: ["Alt"], category: "paint", desc: "Samples color (hold)", longform: "Hold Alt while clicking, or toolbar → Color Picker", icon: "pipette" },
-        { name: "Color Picker (Toggle)", keys: ["Space"], category: "paint", desc: "Switches to color picker tool", longform: "Press Space while painting", icon: "eyedropper" },
-        { name: "Toggle UV Editor", keys: ["U"], category: "paint", desc: "Opens/closes UV editor", longform: "Window menu → UV Editor", icon: "layout-template" },
-        { name: "Toggle 3D Paint", keys: ["Shift", "P"], category: "paint", desc: "Switches 2D/3D painting", longform: "Paint mode toolbar → 3D Paint toggle", icon: "box" },
-        { name: "Increase Brush Size", keys: ["]"], category: "paint", desc: "Makes brush larger", longform: "Tool properties → Brush Size", icon: "plus-circle" },
-        { name: "Decrease Brush Size", keys: ["["], category: "paint", desc: "Makes brush smaller", longform: "Tool properties → Brush Size", icon: "minus-circle" },
-        { name: "Mirror Painting X", keys: ["Shift", "X"], category: "paint", desc: "Toggles X-axis mirror painting", longform: "Paint toolbar → Mirror Painting X", icon: "flip-horizontal" },
-        { name: "Lock Alpha", keys: ["Shift", "A"], category: "paint", desc: "Prevents painting on transparent areas", longform: "Paint toolbar → Lock Alpha", icon: "lock" },
-        { name: "Clear Canvas", keys: ["Ctrl", "Shift", "C"], category: "paint", desc: "Clears entire texture", longform: "Edit menu → Clear Canvas", icon: "trash-2" },
-        { name: "Fill UV Island", keys: ["Shift", "F"], category: "paint", desc: "Fills entire UV island", longform: "Right-click UV island → Fill", icon: "paint-bucket" },
-        
-        // ANIMATE MODE
-        { name: "Rotate Bone/Group", keys: ["R"], category: "animate", desc: "Rotates selected bone or group", longform: "Select bone/group → R key → move mouse", icon: "rotate-3d" },
-        { name: "Move/Translate Bone", keys: ["G"], category: "animate", desc: "Moves/translates selected bone", longform: "Select bone → G key → move mouse", icon: "move" },
-        { name: "Scale Bone", keys: ["S"], category: "animate", desc: "Scales selected bone", longform: "Select bone → S key → move mouse", icon: "maximize" },
-        { name: "Fine Adjustments", keys: ["Shift", "Drag"], category: "animate", desc: "Precise movement with shift", longform: "Hold Shift while dragging for fine control", icon: "gauge" },
-        { name: "Add Keyframe", keys: ["I"], category: "animate", desc: "Inserts keyframe at current time", longform: "Animate menu → Add Keyframe", icon: "key" },
-        { name: "Play/Pause", keys: ["Space"], category: "animate", desc: "Starts/stops playback", longform: "Timeline → Play button", icon: "play" },
-        { name: "Next Frame", keys: ["Right"], category: "animate", desc: "Advances one frame", longform: "Timeline → Next frame button", icon: "step-forward" },
-        { name: "Previous Frame", keys: ["Left"], category: "animate", desc: "Goes back one frame", longform: "Timeline → Previous frame button", icon: "step-back" },
-        { name: "First Frame", keys: ["Shift", "Left"], category: "animate", desc: "Jumps to start", longform: "Timeline → First frame button", icon: "skip-back" },
-        { name: "Last Frame", keys: ["Shift", "Right"], category: "animate", desc: "Jumps to end", longform: "Timeline → Last frame button", icon: "skip-forward" },
-        { name: "Toggle Graph Editor", keys: ["Shift", "F6"], category: "animate", desc: "Opens graph editor", longform: "Timeline → Toggle Graph Editor", icon: "activity" },
-        { name: "Delete Keyframe", keys: ["Alt", "I"], category: "animate", desc: "Removes current keyframe", longform: "Select keyframe → Delete", icon: "trash-2" },
-        { name: "Copy Pose", keys: ["Ctrl", "C"], category: "animate", desc: "Copies current pose", longform: "Animate menu → Copy Pose", icon: "copy" },
-        { name: "Paste Pose", keys: ["Ctrl", "V"], category: "animate", desc: "Pastes copied pose", longform: "Animate menu → Paste Pose", icon: "clipboard-paste" },
-        { name: "Auto Keyframe", keys: ["N"], category: "animate", desc: "Toggles auto-keyframe recording", longform: "Timeline → Auto Keyframe button", icon: "circle-dot" },
-        { name: "Add Marker", keys: ["M"], category: "animate", desc: "Adds timeline marker", longform: "Timeline → Set Marker", icon: "map-pin" },
-        { name: "Clear Timeline", keys: ["Shift", "Delete"], category: "animate", desc: "Hides unselected bones", longform: "Timeline → Clear Timeline", icon: "x" },
-        { name: "Add Bone", keys: ["Shift", "A"], category: "animate", desc: "Adds new bone to armature", longform: "Armature menu → Add Bone", icon: "plus" },
-        { name: "Parent Bone", keys: ["Ctrl", "P"], category: "animate", desc: "Parents selected bone to active", longform: "Select child then parent → Ctrl+P", icon: "git-branch" },
-        { name: "Weight Paint", keys: ["Ctrl", "Tab"], category: "animate", desc: "Toggles weight paint mode", longform: "Mode selector → Weight Paint", icon: "palette" },
-        { name: "Rig", keys: ["Ctrl", "R"], category: "animate", desc: "Opens rigging tools", longform: "Armature menu → Rig", icon: "bone" },
-        { name: "Skin", keys: ["Ctrl", "Shift", "S"], category: "animate", desc: "Auto-skin mesh to bones", longform: "Armature menu → Skin", icon: "user" },
-        { name: "Constraint", keys: ["Ctrl", "Shift", "C"], category: "animate", desc: "Adds constraint to bone", longform: "Bone constraints → Add Constraint", icon: "link" },
-        { name: "Action", keys: ["Shift", "A"], category: "animate", desc: "Creates new action", longform: "Action editor → New Action", icon: "zap" },
-        { name: "Shape Key", keys: ["Ctrl", "Shift", "K"], category: "animate", desc: "Adds shape key", longform: "Shape keys → Add Shape Key", icon: "shapes" },
-        { name: "Driver", keys: ["Ctrl", "D"], category: "animate", desc: "Adds driver to property", longform: "Right-click property → Add Driver", icon: "cpu" },
-        
-        // DISPLAY & VIEW
-        { name: "Toggle Wireframe", keys: ["Z"], category: "display", desc: "Switches solid/wireframe view", longform: "Viewport options → Wireframe", icon: "box-select" },
-        { name: "Toggle Grid", keys: ["G"], category: "display", desc: "Shows/hides background grid", longform: "Display menu → Toggle Grid", icon: "grid-3x3" },
-        { name: "Focus Selection", keys: ["F"], category: "display", desc: "Centers view on selection", longform: "View menu → Frame Selected", icon: "focus" },
-        { name: "Frame All", keys: ["Home"], category: "display", desc: "Shows all objects", longform: "View menu → Frame All", icon: "maximize" },
-        { name: "Toggle Sidebar Left", keys: ["Tab"], category: "display", desc: "Shows/hides left sidebar", longform: "View menu → Toggle Sidebar or click arrow", icon: "panel-left" },
-        { name: "Toggle Sidebar Right", keys: ["Shift", "Tab"], category: "display", desc: "Shows/hides right sidebar", longform: "View menu → Toggle Sidebar or click arrow", icon: "panel-right" },
-        { name: "Fullscreen", keys: ["F11"], category: "display", desc: "Toggles fullscreen mode", longform: "View menu → Fullscreen", icon: "maximize" },
-        { name: "Front View", keys: ["Numpad 1"], category: "display", desc: "Front orthographic view", longform: "View menu → Front", icon: "arrow-up" },
-        { name: "Top View", keys: ["Numpad 7"], category: "display", desc: "Top orthographic view", longform: "View menu → Top", icon: "arrow-down" },
-        { name: "Right View", keys: ["Numpad 3"], category: "display", desc: "Right orthographic view", longform: "View menu → Right", icon: "arrow-right" },
-        { name: "Toggle Perspective", keys: ["Numpad 5"], category: "display", desc: "Perspective/orthographic toggle", longform: "View menu → View Type", icon: "box" },
-        { name: "Zoom In", keys: ["Numpad +"], category: "display", desc: "Zooms view in", longform: "Scroll wheel or View menu → Zoom", icon: "zoom-in" },
-        { name: "Zoom Out", keys: ["Numpad -"], category: "display", desc: "Zooms view out", longform: "Scroll wheel or View menu → Zoom", icon: "zoom-out" },
-        
-        // TOOLS
-        { name: "Move Tool", keys: ["T"], category: "tools", desc: "Activates move/transform tool", longform: "Toolbar → Move Tool", icon: "move" },
-        { name: "Scale Tool", keys: ["R"], category: "tools", desc: "Activates scale tool", longform: "Toolbar → Scale Tool", icon: "maximize" },
-        { name: "Rotate Tool", keys: ["Y"], category: "tools", desc: "Activates rotate tool", longform: "Toolbar → Rotate Tool", icon: "rotate-cw" },
-        { name: "Pivot Tool", keys: ["Shift", "T"], category: "tools", desc: "Edits pivot points", longform: "Toolbar → Pivot Tool", icon: "anchor" },
-        { name: "Vertex Snap", keys: ["Ctrl"], category: "tools", desc: "Hold to snap to vertices", longform: "Hold Ctrl while moving", icon: "magnet" },
-        { name: "Measure Tool", keys: ["Shift", "M"], category: "tools", desc: "Measures distances", longform: "Toolbar → Measure", icon: "ruler" },
-        { name: "Toggle Snapping", keys: ["Shift", "Tab"], category: "tools", desc: "Enables/disables snapping", longform: "Toolbar → Snapping toggle", icon: "toggle-left" },
-        { name: "Export", keys: ["Ctrl", "E"], category: "tools", desc: "Exports model to file", longform: "File → Export", icon: "upload" },
-        { name: "Import", keys: ["Ctrl", "Shift", "I"], category: "tools", desc: "Imports model from file", longform: "File → Import", icon: "download" },
-        { name: "JSON", keys: ["Ctrl", "J"], category: "tools", desc: "Export as JSON", longform: "File → Export → JSON", icon: "file-json" },
-        { name: "Optimize", keys: ["Ctrl", "O"], category: "tools", desc: "Optimizes mesh", longform: "Mesh → Optimize", icon: "zap" },
-        { name: "Backup", keys: ["Ctrl", "B"], category: "tools", desc: "Creates backup", longform: "File → Backup", icon: "archive" },
-        { name: "Recent", keys: ["Ctrl", "Shift", "R"], category: "tools", desc: "Opens recent files", longform: "File → Open Recent", icon: "history" },
-        { name: "Close", keys: ["Ctrl", "W"], category: "tools", desc: "Closes current file", longform: "File → Close", icon: "x" },
-        { name: "Quit", keys: ["Ctrl", "Q"], category: "tools", desc: "Quits application", longform: "File → Quit", icon: "log-out" },
-        { name: "Cut", keys: ["Ctrl", "X"], category: "tools", desc: "Cuts selection", longform: "Edit → Cut", icon: "scissors" },
-        { name: "Copy", keys: ["Ctrl", "C"], category: "tools", desc: "Copies selection", longform: "Edit → Copy", icon: "copy" },
-        { name: "Paste", keys: ["Ctrl", "V"], category: "tools", desc: "Pastes clipboard", longform: "Edit → Paste", icon: "clipboard-paste" },
-        { name: "Toggle 1", keys: ["Ctrl", "1"], category: "tools", desc: "Toggle option 1", longform: "View → Toggle 1", icon: "toggle-right" },
-        { name: "Toggle 2", keys: ["Ctrl", "2"], category: "tools", desc: "Toggle option 2", longform: "View → Toggle 2", icon: "toggle-right" },
-        { name: "Toggle 3", keys: ["Ctrl", "3"], category: "tools", desc: "Toggle option 3", longform: "View → Toggle 3", icon: "toggle-right" },
-        { name: "Toggle 4", keys: ["Ctrl", "4"], category: "tools", desc: "Toggle option 4", longform: "View → Toggle 4", icon: "toggle-right" },
-        { name: "Toggle 5", keys: ["Ctrl", "5"], category: "tools", desc: "Toggle option 5", longform: "View → Toggle 5", icon: "toggle-right" },
-        { name: "Toggle 6", keys: ["Ctrl", "6"], category: "tools", desc: "Toggle option 6", longform: "View → Toggle 6", icon: "toggle-right" },
-        { name: "Toggle 7", keys: ["Ctrl", "7"], category: "tools", desc: "Toggle option 7", longform: "View → Toggle 7", icon: "toggle-right" },
-        { name: "Toggle 8", keys: ["Ctrl", "8"], category: "tools", desc: "Toggle option 8", longform: "View → Toggle 8", icon: "toggle-right" },
-        { name: "Toggle 9", keys: ["Ctrl", "9"], category: "tools", desc: "Toggle option 9", longform: "View → Toggle 9", icon: "toggle-right" },
-        { name: "Toggle 10", keys: ["Ctrl", "0"], category: "tools", desc: "Toggle option 10", longform: "View → Toggle 10", icon: "toggle-right" },
-        { name: "Toggle 11", keys: ["Alt", "1"], category: "tools", desc: "Toggle option 11", longform: "View → Toggle 11", icon: "toggle-right" },
-        { name: "Toggle 12", keys: ["Alt", "2"], category: "tools", desc: "Toggle option 12", longform: "View → Toggle 12", icon: "toggle-right" },
-        { name: "Toggle 13", keys: ["Alt", "3"], category: "tools", desc: "Toggle option 13", longform: "View → Toggle 13", icon: "toggle-right" },
-        { name: "Toggle 14", keys: ["Alt", "4"], category: "tools", desc: "Toggle option 14", longform: "View → Toggle 14", icon: "toggle-right" },
-        { name: "Toggle 15", keys: ["Alt", "5"], category: "tools", desc: "Toggle option 15", longform: "View → Toggle 15", icon: "toggle-right" },
-        { name: "Toggle 16", keys: ["Alt", "6"], category: "tools", desc: "Toggle option 16", longform: "View → Toggle 16", icon: "toggle-right" },
-        { name: "Toggle 17", keys: ["Alt", "7"], category: "tools", desc: "Toggle option 17", longform: "View → Toggle 17", icon: "toggle-right" },
-        { name: "Toggle 18", keys: ["Alt", "8"], category: "tools", desc: "Toggle option 18", longform: "View → Toggle 18", icon: "toggle-right" },
-        { name: "Toggle 19", keys: ["Alt", "9"], category: "tools", desc: "Toggle option 19", longform: "View → Toggle 19", icon: "toggle-right" },
-        { name: "Toggle 20", keys: ["Alt", "0"], category: "tools", desc: "Toggle option 20", longform: "View → Toggle 20", icon: "toggle-right" },
-        { name: "Toggle 21", keys: ["Shift", "1"], category: "tools", desc: "Toggle option 21", longform: "View → Toggle 21", icon: "toggle-right" },
-        { name: "Toggle 22", keys: ["Shift", "2"], category: "tools", desc: "Toggle option 22", longform: "View → Toggle 22", icon: "toggle-right" },
-        { name: "Toggle 23", keys: ["Shift", "3"], category: "tools", desc: "Toggle option 23", longform: "View → Toggle 23", icon: "toggle-right" },
-        { name: "Toggle 24", keys: ["Shift", "4"], category: "tools", desc: "Toggle option 24", longform: "View → Toggle 24", icon: "toggle-right" },
-        { name: "Toggle 25", keys: ["Shift", "5"], category: "tools", desc: "Toggle option 25", longform: "View → Toggle 25", icon: "toggle-right" },
-        { name: "Toggle 26", keys: ["Shift", "6"], category: "tools", desc: "Toggle option 26", longform: "View → Toggle 26", icon: "toggle-right" },
-        { name: "Toggle 27", keys: ["Shift", "7"], category: "tools", desc: "Toggle option 27", longform: "View → Toggle 27", icon: "toggle-right" },
-        { name: "Toggle 28", keys: ["Shift", "8"], category: "tools", desc: "Toggle option 28", longform: "View → Toggle 28", icon: "toggle-right" },
-        { name: "Toggle 29", keys: ["Shift", "9"], category: "tools", desc: "Toggle option 29", longform: "View → Toggle 29", icon: "toggle-right" },
-        { name: "Toggle 30", keys: ["Shift", "0"], category: "tools", desc: "Toggle option 30", longform: "View → Toggle 30", icon: "toggle-right" },
-        { name: "Toggle 31", keys: ["Ctrl", "Shift", "1"], category: "tools", desc: "Toggle option 31", longform: "View → Toggle 31", icon: "toggle-right" },
-        { name: "Toggle 32", keys: ["Ctrl", "Shift", "2"], category: "tools", desc: "Toggle option 32", longform: "View → Toggle 32", icon: "toggle-right" },
-        { name: "Toggle 33", keys: ["Ctrl", "Shift", "3"], category: "tools", desc: "Toggle option 33", longform: "View → Toggle 33", icon: "toggle-right" },
-        { name: "Toggle 34", keys: ["Ctrl", "Shift", "4"], category: "tools", desc: "Toggle option 34", longform: "View → Toggle 34", icon: "toggle-right" },
-        { name: "Toggle 35", keys: ["Ctrl", "Shift", "5"], category: "tools", desc: "Toggle option 35", longform: "View → Toggle 35", icon: "toggle-right" },
-        { name: "Toggle 36", keys: ["Ctrl", "Shift", "6"], category: "tools", desc: "Toggle option 36", longform: "View → Toggle 36", icon: "toggle-right" },
-        { name: "Toggle 37", keys: ["Ctrl", "Shift", "7"], category: "tools", desc: "Toggle option 37", longform: "View → Toggle 37", icon: "toggle-right" },
-        { name: "Toggle 38", keys: ["Ctrl", "Shift", "8"], category: "tools", desc: "Toggle option 38", longform: "View → Toggle 38", icon: "toggle-right" },
-        { name: "Toggle 39", keys: ["Ctrl", "Shift", "9"], category: "tools", desc: "Toggle option 39", longform: "View → Toggle 39", icon: "toggle-right" },
-        { name: "Toggle 40", keys: ["Ctrl", "Shift", "0"], category: "tools", desc: "Toggle option 40", longform: "View → Toggle 40", icon: "toggle-right" }
-    ];
+    console.log('Total shortcuts loaded:', shortcuts.length);
 
-    let currentCategory = 'essential'; // Default to essential
+    let currentCategory = 'essential';
     let searchTerm = '';
-
-    function getShortcuts() {
-        if (currentCategory === 'essential') {
-            return essentialShortcuts;
-        }
-        return allShortcuts;
-    }
 
     function renderShortcuts() {
         const container = document.getElementById('shortcutsContainer');
         const emptyState = document.getElementById('emptyState');
-        const shortcuts = getShortcuts();
+        const countDisplay = document.getElementById('countDisplay');
         
-        const filtered = shortcuts.filter(s => {
-            const matchesCategory = currentCategory === 'all' || currentCategory === 'essential' || s.category === currentCategory;
+        console.log('Current category:', currentCategory);
+        console.log('Search term:', searchTerm);
+        
+        let filtered = shortcuts.filter(s => {
+            // For "all", show everything
+            // For "essential", show only essential ones
+            // For other categories, match the category
+            let matchesCategory;
+            if (currentCategory === 'all') {
+                matchesCategory = true;
+            } else if (currentCategory === 'essential') {
+                matchesCategory = s.essential === true;
+            } else {
+                matchesCategory = s.category === currentCategory;
+            }
+            
             const matchesSearch = searchTerm === '' || 
                 s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 s.keys.join(' ').toLowerCase().includes(searchTerm.toLowerCase()) ||
                 s.desc.toLowerCase().includes(searchTerm.toLowerCase());
+            
             return matchesCategory && matchesSearch;
         });
+
+        console.log('Filtered count:', filtered.length);
 
         if (filtered.length === 0) {
             container.innerHTML = '';
             emptyState.style.display = 'block';
+            countDisplay.textContent = '';
             return;
         }
         
         emptyState.style.display = 'none';
+        
+        // Update count display
+        let totalInCategory;
+        if (currentCategory === 'all') {
+            totalInCategory = shortcuts.length;
+        } else if (currentCategory === 'essential') {
+            totalInCategory = shortcuts.filter(s => s.essential).length;
+        } else {
+            totalInCategory = shortcuts.filter(s => s.category === currentCategory).length;
+        }
+        
+        countDisplay.textContent = `Showing ${filtered.length} of ${totalInCategory} shortcuts`;
         
         container.innerHTML = filtered.map(s => `
             <div class="shortcut-card category-${s.category}" onclick="toggleLongform(this)">
@@ -774,7 +615,7 @@
                     <div class="card-header">
                         <span class="shortcut-name">
                             ${s.name}
-                            ${s.category === 'essential' ? '<span class="essential-badge">★ Essential</span>' : ''}
+                            ${s.essential ? '<span class="essential-badge">★ Essential</span>' : ''}
                         </span>
                         <span class="shortcut-category">${s.category}</span>
                     </div>
@@ -782,6 +623,7 @@
                         ${s.keys.map(k => `<span class="key">${k}</span>`).join('')}
                     </div>
                     <div class="description">${s.desc}</div>
+                    ${s.context ? `<div class="context-note">Context: ${s.context}</div>` : ''}
                     <div class="longform">
                         <div class="longform-label">Menu Method (No Shortcut)</div>
                         <div class="longform-text">${s.longform}</div>
