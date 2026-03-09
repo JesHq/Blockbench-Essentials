@@ -1,4 +1,10 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockbench Essentials</title>
+    <style>
 /* Header */
 .header {
 position: fixed;
@@ -4529,133 +4535,117 @@ grid-template-columns: 1fr;
     grid-template-columns: 1fr;
 }
 
-}
-Summary of Changes Made:
-1.  Margin Fix
-•  Changed margin-top: 200px to margin-top: 180px in both .main-content and the responsive media query
-2.  Previous Keyframe Arrow Fixed
-•  In .icon-prevkey::before: Changed border-left: 15px solid #3b82f6 to border-right: 15px solid #3b82f6
-•  This makes the arrow point left instead of right
-3.  Animation Improvements
-All animations have been enhanced to be more unique and fitting:
-•  Extrude: Added scaling and enhanced glow effects
-•  Loop Cut: Improved scanning line with glow pulse
-•  Create Face: Added rotation and scale effects
-•  Subdivide: Grid density changes more noticeably
-•  Select: Enhanced pulse ring effect
-•  Bridge: Better connection animation with opacity
-•  Rip: More dramatic tearing with rotation
-•  Separate: Increased distance between pieces
-•  Mirror: Added color shift (hue-rotate) for reflection effect
-•  Brush: Enhanced glow pulse
-•  Bucket: Better tilt and fill animation
-•  Keyframe: Enhanced glow and scale
-•  Play: Added drop-shadow pulse
-•  Wireframe: Background fill effect
-•  Grid: Position shift for parallax effect
-•  Move: Increased movement range
-•  Rotate: Continuous smooth rotation
-•  Pivot: Added scale effect
-•  Toggle: Better color transition
-•  Export/Import: Increased movement distance
-•  JSON: Added color shift and scale
-•  Optimize: Squeeze effect with border color change
-•  Recent: Clock hand now rotates 360°
-•  Close: Added scale effect
-•  Cut: Increased rotation angle
-•  Copy: Diagonal movement
-•  Paste: Enhanced drop effect
-•  Search: Increased scale range
-•  Find: Enhanced glow ring
-•  Select All: Added brightness filter and more rotation
-•  Random: Added scale variations per step
-•  Border: Enhanced glow with border color shift
-•  Sharp: Added drop-shadow glow
-•  Linked: Increased movement range
-•  Axis: Added rotation
-•  Origin: Enhanced ripple effect with larger shadow rings
-•  Vertex: Increased scale range and shadow expansion
-•  Edge: Added opacity fade
-•  Face: Added rotation
-•  Mesh: Continuous 360° rotation
-•  Texture: Increased position shift
-•  Material: Added contrast adjustment
-•  Timeline: Added horizontal movement
-•  Dope/NLA: Increased vertical movement
-•  Python: Smoother clip-path morph
-•  Toolbar: Increased rotation angle
-•  Status: Added color shift
-•  Area/Split: Increased movement range
-•  Swap: Added rotation to the swap
-•  Max/Min: Added border color shifts
-•  View Book: Increased rotation angle
-•  Camset: Added background fill
-•  Clip: Added rotation to scissors
-•  Render: Added scale effect
-•  Play/Reverse: Increased movement
-•  Prev/Next Key: Increased bounce distance
-•  Jump: Increased height
-•  Set Start/End: Added rotation
-•  Scrub: Enhanced color pulse
-•  Keying Set: Added rotation and color shift
-•  Insert/Delete Key: Enhanced scale effects
-•  Clean: Added brightness and blur
-•  Smooth Key: Increased movement distance
-•  Clean Channels: Added horizontal wipe
-•  Mute: Added scale reduction
-•  Update/Refresh: Continuous rotation
-•  Reload: Added opacity pulse with rotation
-•  Debug: Added random movement (crawl effect)
-•  Factory: Added brightness shift
-•  Save/Load User: Increased movement distance
-•  Theme: Added hue-rotation for color shift
-•  Navigation: Increased movement
-•  Save/Load Prefs: Enhanced effects
-•  First/Last: Increased movement
-•  Graph: Increased movement distance
-•  Del Key: Enhanced fade and scale
-•  Weight: Gradient position shift
-•  Skin: Added border color shift
-•  Action/Driver: Increased movement with rotation
-•  Shape Key: Added width compression
-•  Zoom In/Out: Increased scale range
-•  Fullscreen: Added border width change
-•  Bone: Increased rotation angle
-•  Fine: Enhanced box-shadow shift with color change
-•  Normal: Increased movement
-•  Planar: Increased tilt range
-•  Unhide: Added rotation entrance
-•  Prop: Enhanced glow expansion
-•  Loop Select: Enhanced glow ring
-•  Shrink: Increased scale reduction with color shift
-•  Paint 3D: Added X-axis rotation
-•  Lock: Enhanced fade with scale
-•  Clear: Added blur effect
-•  Fill: Increased scale range
-•  Auto: Enhanced scale effect
-•  Marker: Increased bounce height
-•  New: Enhanced entrance with overshoot
-•  Open: Added vertical lift
-•  Prefs: Increased rotation range
-•  Undo/Redo: Increased movement
-•  Duplicate: Enhanced opacity and movement
-•  Screenshot: Enhanced flash expansion
-•  Save: Enhanced scale effect
-•  Invert: Added brightness shift
-4.  Essential Shortcuts Recommendations
-For your "Most Useful" essentials section, I recommend including these Blockbench shortcuts:
-const essentialShortcuts = [
-{ name: "Extrude", keys: ["E"], desc: "Push faces outward", category: "edit" },
-{ name: "Inset", keys: ["I"], desc: "Create inner faces", category: "edit" },
-{ name: "Loop Cut", keys: ["Ctrl", "R"], desc: "Add edge loops", category: "edit" },
-{ name: "Bevel", keys: ["Ctrl", "B"], desc: "Round sharp edges", category: "edit" },
-{ name: "Select All", keys: ["Ctrl", "A"], desc: "Select everything", category: "general" },
-{ name: "Deselect", keys: ["Alt", "A"], desc: "Clear selection", category: "general" },
-{ name: "Undo", keys: ["Ctrl", "Z"], desc: "Reverse last action", category: "general" },
-{ name: "Redo", keys: ["Ctrl", "Shift", "Z"], desc: "Restore undone action", category: "general" },
-{ name: "Save", keys: ["Ctrl", "S"], desc: "Save project", category: "general" },
-{ name: "Toggle Wireframe", keys: ["Z"], desc: "Show/hide wireframe", category: "display" },
-{ name: "Focus Selected", keys: ["."], desc: "Center view on selection", category: "display" },
-{ name: "Delete", keys: ["X"], desc: "Remove selected", category: "general" }
-];
-These cover the most frequently used operations in Blockbench: basic mesh editing (extrude, inset, loop cut, bevel), selection management, undo/redo, save, viewport navigation, and deletion.
+}    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="title">Blockbench Essentials</h1>
+            <p class="subtitle">Most useful shortcuts for Blockbench</p>
+            <input type="text" class="search-box" placeholder="Search shortcuts..." id="searchBox">
+            <div class="categories" id="categories">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="general">General</button>
+                <button class="category-btn" data-category="edit">Edit</button>
+                <button class="category-btn" data-category="display">Display</button>
+                <button class="category-btn" data-category="animation">Animation</button>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main-content" id="mainContent">
+        <!-- Essential shortcuts section -->
+        <div class="essentials-section" id="essentialsSection">
+            <div class="essentials-title">⭐ Most Useful</div>
+            <div class="essentials-grid" id="essentialsGrid"></div>
+        </div>
+        
+        <!-- All shortcuts grid -->
+        <div class="shortcuts-grid" id="shortcutsGrid"></div>
+    </main>
+
+    <script>
+        // Shortcut data
+        const shortcuts = [
+            { name: "Extrude", keys: ["E"], desc: "Push faces outward", category: "edit", longform: "Select faces and press E to extrude them outward. Move mouse to control distance." },
+            { name: "Inset", keys: ["I"], desc: "Create inner faces", category: "edit", longform: "Press I to create an inset of selected faces. Useful for adding detail." },
+            { name: "Loop Cut", keys: ["Ctrl", "R"], desc: "Add edge loops", category: "edit", longform: "Press Ctrl+R to add edge loops. Scroll to increase cuts, click to confirm." },
+            { name: "Bevel", keys: ["Ctrl", "B"], desc: "Round sharp edges", category: "edit", longform: "Select edges and press Ctrl+B to bevel. Scroll for more segments." },
+            { name: "Select All", keys: ["Ctrl", "A"], desc: "Select everything", category: "general" },
+            { name: "Deselect", keys: ["Alt", "A"], desc: "Clear selection", category: "general" },
+            { name: "Undo", keys: ["Ctrl", "Z"], desc: "Reverse last action", category: "general" },
+            { name: "Redo", keys: ["Ctrl", "Shift", "Z"], desc: "Restore undone action", category: "general" },
+            { name: "Save", keys: ["Ctrl", "S"], desc: "Save project", category: "general" },
+            { name: "Toggle Wireframe", keys: ["Z"], desc: "Show/hide wireframe", category: "display" },
+            { name: "Focus Selected", keys: ["."], desc: "Center view on selection", category: "display" },
+            { name: "Delete", keys: ["X"], desc: "Remove selected", category: "general" }
+        ];
+
+        const essentials = ["Extrude", "Inset", "Loop Cut", "Bevel", "Select All", "Undo", "Save", "Focus Selected"];
+
+        // Render functions
+        function renderKeys(keys) {
+            return keys.map(k => `<span class="key">${k}</span>`).join('');
+        }
+
+        function createCard(shortcut) {
+            const isEssential = essentials.includes(shortcut.name);
+            return `
+                <div class="shortcut-card" data-category="${shortcut.category}" data-name="${shortcut.name.toLowerCase()}">
+                    <div class="demo-container">
+                        <div class="icon-base icon-${shortcut.name.toLowerCase().replace(/\s+/g, '')}"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div class="shortcut-name">${shortcut.name}</div>
+                            <span class="shortcut-category">${shortcut.category}</span>
+                        </div>
+                        <div class="keys-container">${renderKeys(shortcut.keys)}</div>
+                        <div class="description">${shortcut.desc}</div>
+                        ${shortcut.longform ? `
+                            <div class="longform" id="longform-${shortcut.name.replace(/\s+/g, '')}">
+                                <div class="longform-label">How to use</div>
+                                <div class="longform-text">${shortcut.longform}</div>
+                            </div>
+                            <button class="toggle-btn" onclick="toggleLongform('${shortcut.name.replace(/\s+/g, '')}')">Show More</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleLongform(name) {
+            const el = document.getElementById('longform-' + name);
+            el.classList.toggle('show');
+            event.target.textContent = el.classList.contains('show') ? 'Show Less' : 'Show More';
+        }
+
+        function filterShortcuts() {
+            const search = document.getElementById('searchBox').value.toLowerCase();
+            const category = document.querySelector('.category-btn.active').dataset.category;
+            
+            document.querySelectorAll('.shortcut-card').forEach(card => {
+                const name = card.dataset.name;
+                const cat = card.dataset.category;
+                const matchesSearch = name.includes(search);
+                const matchesCategory = category === 'all' || cat === category;
+                card.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+            });
+        }
+
+        // Initialize
+        document.getElementById('shortcutsGrid').innerHTML = shortcuts.map(createCard).join('');
+        document.getElementById('essentialsGrid').innerHTML = shortcuts.filter(s => essentials.includes(s.name)).map(createCard).join('');
+
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', filterShortcuts);
+        document.getElementById('categories').addEventListener('click', e => {
+            if (e.target.classList.contains('category-btn')) {
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                filterShortcuts();
+            }
+        });
+    </script>
+</body>
+</html>
