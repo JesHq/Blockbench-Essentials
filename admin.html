@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockbench Essentials - Admin Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            color: #00d4aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        /* Login Form */
+        #loginSection {
+            background: #16213e;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #0f3460;
+            color: #fff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00d4aa;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #00b894; }
+        
+        /* Admin Panel */
+        #adminSection { display: none; }
+        .shortcut-form {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .shortcut-list {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .shortcut-item {
+            background: #0f3460;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .error { color: #e74c3c; text-align: center; margin-top: 10px; }
+        .success { color: #00d4aa; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <!-- Lucide Palette Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.01 17.461 2 12 2z"/></svg>
+            Blockbench Essentials Admin Panel
+        </h1>
+        
+        <!-- Login Section -->
+        <div id="loginSection">
+            <h2 style="text-align: center; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <!-- Lucide Lock Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Enter Admin Code
+            </h2>
+            <input type="password" id="adminCode" placeholder="Admin password">
+            <button onclick="login()">Login</button>
+            <div id="loginError" class="error"></div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminSection">
+            <div class="shortcut-form">
+                <h2 style="display: flex; align-items: center; gap: 8px;">
+                    <!-- Lucide Plus Circle Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                    Add New Shortcut
+                </h2>
+                <input type="text" id="name" placeholder="Name (e.g., Copy)">
+                <input type="text" id="keys" placeholder="Keys (e.g., Ctrl+C)">
+                <input type="text" id="category" placeholder="Category (e.g., edit, paint)">
+                <input type="text" id="desc" placeholder="Description">
+                <button onclick="addShortcut()">Add Shortcut</button>
+                <div id="formMessage"></div>
+            </div>
+
+            <div class="shortcut-list">
+                <h2 style="display: flex; align-items: center; gap: 8px;">
+                    <!-- Lucide List Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+                    Current Shortcuts
+                </h2>
+                <div id="shortcutsList">Loading...</div>
+            </div>
+            
+            <button onclick="logout()" style="margin-top: 20px; background: #e74c3c; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <!-- Lucide Log Out Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/.netlify/functions/getShortcuts';
+        let isLoggedIn = false;
+
+        async function login() {
+            const code = document.getElementById('adminCode').value;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: 'verify',
+                        adminCode: code 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    isLoggedIn = true;
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('adminSection').style.display = 'block';
+                    loadShortcuts();
+                } else {
+                    document.getElementById('loginError').textContent = 'Invalid admin code';
+                }
+            } catch (err) {
+                document.getElementById('loginError').textContent = 'Error verifying code';
+            }
+        }
+
+        async function loadShortcuts() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                const list = document.getElementById('shortcutsList');
+                if (data.shortcuts && data.shortcuts.length > 0) {
+                    list.innerHTML = data.shortcuts.map(s => `
+                        <div class="shortcut-item">
+                            <div>
+                                <strong>${s.name}</strong> - ${s.keys}
+                                <br><small>${s.category} | ${s.desc}</small>
+                            </div>
+                            <button onclick="deleteShortcut('${s.name}')" style="width: auto; padding: 8px 15px; display: flex; align-items: center; gap: 5px;">
+                                <!-- Lucide Trash Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                Delete
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<p>No shortcuts found</p>';
+                }
+            } catch (err) {
+                document.getElementById('shortcutsList').innerHTML = 'Error loading shortcuts';
+            }
+        }
+
+        async function addShortcut() {
+            const shortcut = {
+                name: document.getElementById('name').value,
+                keys: document.getElementById('keys').value,
+                category: document.getElementById('category').value,
+                desc: document.getElementById('desc').value,
+                adminCode: document.getElementById('adminCode').value
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: 'add',
+                        ...shortcut
+                    })
+                });
+                
+                const data = await response.json();
+                const msg = document.getElementById('formMessage');
+                
+                if (data.success) {
+                    msg.className = 'success';
+                    msg.textContent = 'Shortcut added!';
+                    loadShortcuts();
+                    document.getElementById('name').value = '';
+                    document.getElementById('keys').value = '';
+                    document.getElementById('category').value = '';
+                    document.getElementById('desc').value = '';
+                } else {
+                    msg.className = 'error';
+                    msg.textContent = data.error || 'Failed to add shortcut';
+                }
+            } catch (err) {
+                document.getElementById('formMessage').className = 'error';
+                document.getElementById('formMessage').textContent = 'Error adding shortcut';
+            }
+        }
+
+        async function deleteShortcut(name) {
+            if (!confirm(`Delete "${name}"?`)) return;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: 'delete',
+                        name: name,
+                        adminCode: document.getElementById('adminCode').value
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    loadShortcuts();
+                }
+            } catch (err) {
+                alert('Error deleting shortcut');
+            }
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminSection').style.display = 'none';
+            document.getElementById('adminCode').value = '';
+        }
+
+        document.getElementById('adminCode')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
