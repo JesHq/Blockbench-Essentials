@@ -1,0 +1,6 @@
+{
+  "shortcuts": [
+    {"name": "Copy", "keys": ["Ctrl", "C"], "category": "edit", "desc": "Copy selection", "icon": "copy"},
+    {"name": "Paste", "keys": ["Ctrl", "V"], "category": "edit", "desc": "Paste from clipboard", "icon": "clipboard-paste"}
+  ]
+}
