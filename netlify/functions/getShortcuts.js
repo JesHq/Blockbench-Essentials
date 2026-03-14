@@ -16,21 +16,18 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    // Read and parse the file
-    const rawData = fs.readFileSync(SHORTCUTS_FILE, 'utf8');
-    const parsedData = JSON.parse(rawData);
-    
-    // Extract shortcuts array - handle both formats:
-    // { "shortcuts": [...] } OR [...]
-    let shortcuts = [];
-    if (Array.isArray(parsedData)) {
-      shortcuts = parsedData;
-    } else if (parsedData.shortcuts && Array.isArray(parsedData.shortcuts)) {
-      shortcuts = parsedData.shortcuts;
-    }
-
-    // GET request - return shortcuts
+    // GET request - just return shortcuts (no auth needed for reading)
     if (event.httpMethod === 'GET') {
+      const rawData = fs.readFileSync(SHORTCUTS_FILE, 'utf8');
+      const parsedData = JSON.parse(rawData);
+      
+      let shortcuts = [];
+      if (Array.isArray(parsedData)) {
+        shortcuts = parsedData;
+      } else if (parsedData.shortcuts && Array.isArray(parsedData.shortcuts)) {
+        shortcuts = parsedData.shortcuts;
+      }
+
       return {
         statusCode: 200,
         headers,
@@ -60,13 +57,23 @@ exports.handler = async function(event, context) {
         }
       }
 
-      // Verify admin code for protected actions
+      // For add/delete, verify admin code first
       if (adminCode !== process.env.ADMIN_CODE) {
         return {
           statusCode: 200,
           headers,
           body: JSON.stringify({ success: false, error: 'Invalid admin code' })
         };
+      }
+
+      // Read shortcuts for modification
+      const rawData = fs.readFileSync(SHORTCUTS_FILE, 'utf8');
+      const parsedData = JSON.parse(rawData);
+      let shortcuts = [];
+      if (Array.isArray(parsedData)) {
+        shortcuts = parsedData;
+      } else if (parsedData.shortcuts && Array.isArray(parsedData.shortcuts)) {
+        shortcuts = parsedData.shortcuts;
       }
 
       // ADD shortcut
@@ -79,8 +86,6 @@ exports.handler = async function(event, context) {
           icon: 'command'
         };
         shortcuts.push(newShortcut);
-        
-        // Save back in the same format: { shortcuts: [...] }
         fs.writeFileSync(SHORTCUTS_FILE, JSON.stringify({ shortcuts: shortcuts }, null, 2));
         return {
           statusCode: 200,
@@ -117,7 +122,7 @@ exports.handler = async function(event, context) {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message, stack: error.stack })
+      body: JSON.stringify({ error: error.message })
     };
   }
 };
