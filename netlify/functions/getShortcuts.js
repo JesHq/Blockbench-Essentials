@@ -11,28 +11,30 @@ exports.handler = async function(event, context) {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
   };
 
-  // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
 
   try {
-    // GET request - just return shortcuts (for the main page)
+    const rawData = fs.readFileSync(SHORTCUTS_FILE, 'utf8');
+    let shortcuts = JSON.parse(rawData);
+
+    if (!Array.isArray(shortcuts)) {
+      shortcuts = shortcuts.shortcuts || [];
+    }
+
     if (event.httpMethod === 'GET') {
-      const data = fs.readFileSync(SHORTCUTS_FILE, 'utf8');
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ shortcuts: JSON.parse(data) })
+        body: JSON.stringify({ shortcuts: shortcuts })
       };
     }
 
-    // POST request - handle admin actions
     if (event.httpMethod === 'POST') {
       const body = JSON.parse(event.body || '{}');
       const { action, adminCode } = body;
 
-      // VERIFY ADMIN CODE
       if (action === 'verify') {
         if (adminCode === process.env.ADMIN_CODE) {
           return {
@@ -42,14 +44,13 @@ exports.handler = async function(event, context) {
           };
         } else {
           return {
-            statusCode: 200, // Return 200 but success: false
+            statusCode: 200,
             headers,
             body: JSON.stringify({ success: false, error: 'Invalid admin code' })
           };
         }
       }
 
-      // For add/delete, verify admin code first
       if (adminCode !== process.env.ADMIN_CODE) {
         return {
           statusCode: 200,
@@ -58,9 +59,7 @@ exports.handler = async function(event, context) {
         };
       }
 
-      // ADD shortcut
       if (action === 'add') {
-        const data = JSON.parse(fs.readFileSync(SHORTCUTS_FILE, 'utf8'));
         const newShortcut = {
           name: body.name,
           keys: body.keys.split('+').map(k => k.trim()),
@@ -68,8 +67,8 @@ exports.handler = async function(event, context) {
           desc: body.desc,
           icon: 'command'
         };
-        data.push(newShortcut);
-        fs.writeFileSync(SHORTCUTS_FILE, JSON.stringify(data, null, 2));
+        shortcuts.push(newShortcut);
+        fs.writeFileSync(SHORTCUTS_FILE, JSON.stringify(shortcuts, null, 2));
         return {
           statusCode: 200,
           headers,
@@ -77,10 +76,8 @@ exports.handler = async function(event, context) {
         };
       }
 
-      // DELETE shortcut
       if (action === 'delete') {
-        const data = JSON.parse(fs.readFileSync(SHORTCUTS_FILE, 'utf8'));
-        const filtered = data.filter(s => s.name !== body.name);
+        const filtered = shortcuts.filter(s => s.name !== body.name);
         fs.writeFileSync(SHORTCUTS_FILE, JSON.stringify(filtered, null, 2));
         return {
           statusCode: 200,
