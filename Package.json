@@ -1,7 +1,8 @@
 {
-  "name": "your-project",
+  "name": "blockbench-essentials",
   "type": "module",
+  "version": "1.0.0",
   "dependencies": {
-    ...
+    "@upstash/redis": "^1.28.0"
   }
 }
