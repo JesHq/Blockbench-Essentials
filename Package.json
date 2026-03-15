@@ -1,6 +1,7 @@
 {
+  "name": "your-project",
   "type": "module",
   "dependencies": {
-    "@upstash/redis": "^1.28.0"
+    ...
   }
 }
