@@ -849,7 +849,7 @@
 
     async function loadShortcuts() {
         try {
-            const res = await fetch('/.netlify/functions/getShortcuts');
+            const res = await fetch('/api/getShortcuts');
             const data = await res.json();
             if (data.shortcuts && data.shortcuts.length > 0) {
                 shortcuts = data.shortcuts;
