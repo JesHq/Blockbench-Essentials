@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "npm install --production=false && npm run build",
-  "installCommand": "npm install --production=false",
+  "buildCommand": "npm install && npm run build",
+  "installCommand": "npm install",
   "framework": null,
   "functions": {
     "api/getShortcuts.js": {
-      "maxDuration": 10
+      "maxDuration": 10,
+      "includeFiles": "node_modules/@upstash/redis/**"
     }
   }
 }
