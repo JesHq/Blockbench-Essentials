@@ -1,14 +1,15 @@
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
-import { Redis } from '@upstash/redis';
+let Redis;
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+async function getRedis() {
+  if (!Redis) {
+    const module = await import('@upstash/redis');
+    Redis = module.Redis;
+  }
+  return new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+}
 
 const SHORTCUTS_KEY = 'shortcuts:data';
 
@@ -397,6 +398,159 @@ const defaultShortcuts = [
   {"name": "Rotate Clockwise", "keys": [], "category": "textures", "desc": "Rotate 90° clockwise", "icon": "rotate-cw"},
   {"name": "Rotate Counter-clockwise", "keys": [], "category": "textures", "desc": "Rotate 90° counter-clockwise", "icon": "rotate-ccw"},
   {"name": "Resize Texture", "keys": [], "category": "textures", "desc": "Resize texture dimensions", "icon": "maximize"},
+  {"name": "Crop Texture to Selection", "keys": [], "category": "textures", "desc": "Crop to selection", "desc": "Import animation files", "icon": "file-down"},
+  {"name": "Export Animations", "keys": [], "category": "animation", "desc": "Export animations", "icon": "file-up"},
+  {"name": "Save All Animations", "keys": [], "category": "animation", "desc": "Save all animations", "icon": "save"},
+  {"name": "Bake Inverse Kinematics", "keys": [], "category": "animation", "desc": "Bake IK to keyframes", "icon": "bone"},
+  {"name": "Bake Animation Pose into Model", "keys": [], "category": "animation", "desc": "Apply pose to model", "icon": "box"},
+  {"name": "Change Animation Speed", "keys": [], "category": "animation", "desc": "Adjust playback speed", "icon": "gauge"},
+  {"name": "Merge Animation", "keys": [], "category": "animation", "desc": "Combine animations", "icon": "git-merge"},
+  {"name": "Optimize Animation", "keys": [], "category": "animation", "desc": "Reduce keyframes", "icon": "zap"},
+  {"name": "Retarget Animations", "keys": [], "category": "animation", "desc": "Retarget to different rig", "icon": "target"},
+  {"name": "Blend Mode", "keys": [], "category": "animation", "desc": "Set blend mode (Default, Opacity, Color, Multiply, Add, Darken, Lighten, Screen, Overlay, Difference)", "icon": "blend"},
+  {"name": "Bedrock Animation Mode", "keys": [], "category": "animation", "desc": "Set mode (Entity, Item 1st Person, Item 3rd Person)", "icon": "box"},
+  {"name": "Lock Motion Trail", "keys": [], "category": "animation", "desc": "Lock motion trail display", "icon": "lock"},
+  {"name": "Add Keyframe", "keys": ["Q"], "category": "animation", "desc": "Add keyframe at current time", "icon": "plus-circle"},
+  {"name": "Previous Keyframe", "keys": [], "category": "animation", "desc": "Go to previous keyframe", "icon": "skip-back"},
+  {"name": "Next Keyframe", "keys": [], "category": "animation", "desc": "Go to next keyframe", "icon": "skip-forward"},
+  {"name": "Timecode", "keys": [], "category": "animation", "desc": "Increase/Decrease timecode", "icon": "clock"},
+  {"name": "Uniform Scaling", "keys": [], "category": "animation", "desc": "Toggle uniform scale", "icon": "scale"},
+  {"name": "Link Bézier Handles", "keys": [], "category": "animation", "desc": "Link curve handles", "icon": "link"},
+  {"name": "Interpolation", "keys": [], "category": "animation", "desc": "Set interpolation (Linear, Smooth, Bézier, Step)", "icon": "activity"},
+  {"name": "Reset Keyframe", "keys": [], "category": "animation", "desc": "Reset keyframe values", "icon": "rotate-ccw"},
+  {"name": "Reset Keyframe Handles", "keys": [], "category": "animation", "desc": "Reset curve handles", "icon": "rotate-ccw"},
+  {"name": "Resolve Keyframe", "keys": [], "category": "animation", "desc": "Resolve keyframe data", "icon": "check-circle"},
+  {"name": "Reverse Keyframes", "keys": [], "category": "animation", "desc": "Reverse keyframe order", "icon": "flip-horizontal"},
+  {"name": "Create Keyframe Column", "keys": [], "category": "animation", "desc": "Create keyframe column", "icon": "plus"},
+  {"name": "Select Keyframe Column", "keys": [], "category": "animation", "desc": "Select keyframe column", "icon": "mouse-pointer-2"},
+  {"name": "Flip Animation", "keys": [], "category": "animation", "desc": "Mirror animation", "icon": "flip-horizontal"},
+  {"name": "Toggle Graph Editor", "keys": ["F3"], "category": "animation", "desc": "Show/hide graph editor", "icon": "activity"},
+  {"name": "Display Other Graphs", "keys": [], "category": "animation", "desc": "Show other channels", "icon": "bar-chart-2"},
+  {"name": "Include Other Graphs", "keys": [], "category": "animation", "desc": "Include other channels", "icon": "bar-chart"},
+  {"name": "Include Zero Line", "keys": [], "category": "animation", "desc": "Show zero reference line", "icon": "minus"},
+  {"name": "Play Animation", "keys": ["Space"], "category": "animation", "desc": "Play/Pause animation", "icon": "play"},
+  {"name": "Looped Playback", "keys": [], "category": "animation", "desc": "Toggle loop mode", "icon": "repeat"},
+  {"name": "Playback Speed", "keys": [], "category": "animation", "desc": "Increase/Decrease speed", "icon": "gauge"},
+  {"name": "Jump to Animation Start", "keys": ["Pos1"], "category": "animation", "desc": "Go to first frame", "icon": "arrow-left-to-line"},
+  {"name": "Jump to Animation End", "keys": ["End"], "category": "animation", "desc": "Go to last frame", "icon": "arrow-right-to-line"},
+  {"name": "Jump 1 Frame Back", "keys": [","], "category": "animation", "desc": "Previous frame", "icon": "arrow-left"},
+  {"name": "Jump 1 Frame Forth", "keys": ["."], "category": "animation", "desc": "Next frame", "icon": "arrow-right"},
+  {"name": "Set Timeline Range Start", "keys": [], "category": "animation", "desc": "Set range start", "icon": "flag"},
+  {"name": "Set Timeline Range End", "keys": [], "category": "animation", "desc": "Set range end", "icon": "flag"},
+  {"name": "Disable Timeline Range", "keys": [], "category": "animation", "desc": "Clear timeline range", "icon": "x"},
+  {"name": "Bring Up All Animators", "keys": [], "category": "animation", "desc": "Show all animators", "icon": "layers"},
+  {"name": "Fold All Animators", "keys": [], "category": "animation", "desc": "Collapse animators", "icon": "folder-minus"},
+  {"name": "Clear Timeline", "keys": [], "category": "animation", "desc": "Clear all keyframes", "icon": "trash-2"},
+  {"name": "Animate Effects", "keys": [], "category": "animation", "desc": "Toggle effects animation", "icon": "sparkles"},
+  {"name": "Filter Channels", "keys": [], "category": "animation", "desc": "Filter timeline channels", "icon": "filter"},
+  {"name": "Set Marker", "keys": ["Ctrl", "M"], "category": "animation", "desc": "Add timeline marker", "icon": "map-pin"},
+  {"name": "Add Animation Controller", "keys": [], "category": "animation", "desc": "Create controller", "icon": "plus-square"},
+  {"name": "Add Animation Controller State", "keys": [], "category": "animation", "desc": "Add controller state", "icon": "plus"},
+  {"name": "Controller Preview", "keys": ["Space"], "category": "animation", "desc": "Preview controller", "icon": "play"},
+  {"name": "Controller Playback Speed", "keys": [], "category": "animation", "desc": "Adjust controller speed", "icon": "gauge"},
+  
+  // UV CATEGORY (27 shortcuts)
+  {"name": "UV Mode", "keys": [], "category": "uv", "desc": "Set UV mode (Per-face UV, Box UV)", "icon": "layout-template"},
+  {"name": "UV Rotation", "keys": [], "category": "uv", "desc": "Rotate UV mapping", "icon": "rotate-cw"},
+  {"name": "UV Grid", "keys": [], "category": "uv", "desc": "Set grid (Pixel, 1x, 2x, 3x, 4x, 6x, 8x)", "icon": "grid"},
+  {"name": "Maximize UV", "keys": [], "category": "uv", "desc": "Maximize UV space usage", "icon": "maximize"},
+  {"name": "Turn Mapping", "keys": [], "category": "uv", "desc": "Turn UV mapping", "icon": "rotate-3d"},
+  {"name": "Auto UV", "keys": [], "category": "uv", "desc": "Auto-generate UV mapping", "icon": "sparkles"},
+  {"name": "UV Project from View", "keys": [], "category": "uv", "desc": "Project UV from current view", "icon": "camera"},
+  {"name": "Relative Auto UV", "keys": [], "category": "uv", "desc": "Relative auto UV generation", "icon": "git-compare"},
+  {"name": "UV Mirror X", "keys": [], "category": "uv", "desc": "Mirror UV horizontally", "icon": "flip-horizontal"},
+  {"name": "UV Mirror Y", "keys": [], "category": "uv", "desc": "Mirror UV vertically", "icon": "flip-vertical"},
+  {"name": "Rotate UV Left", "keys": [], "category": "uv", "desc": "Rotate UV 90° left", "icon": "rotate-ccw"},
+  {"name": "Rotate UV Right", "keys": [], "category": "uv", "desc": "Rotate UV 90° right", "icon": "rotate-cw"},
+  {"name": "Remove Face", "keys": [], "category": "uv", "desc": "Remove selected face", "icon": "trash-2"},
+  {"name": "Reset Face", "keys": [], "category": "uv", "desc": "Reset face to default", "icon": "rotate-ccw"},
+  {"name": "Apply To All Faces", "keys": [], "category": "uv", "desc": "Apply settings to all faces", "icon": "layers"},
+  {"name": "Cullface", "keys": [], "category": "uv", "desc": "Set cullface (None, North, South, West, East, Up, Down)", "icon": "box"},
+  {"name": "Enable Cullface", "keys": [], "category": "uv", "desc": "Toggle cullface on/off", "icon": "check"},
+  {"name": "Affect all faces", "keys": ["Shift"], "category": "uv", "desc": "Apply to all faces with Shift", "icon": "layers"},
+  {"name": "Tint", "keys": [], "category": "uv", "desc": "Apply color tint", "icon": "palette"},
+  {"name": "Tint Index", "keys": [], "category": "uv", "desc": "Increase/Decrease tint index", "icon": "hash"},
+  {"name": "Merge UV Vertices", "keys": [], "category": "uv", "desc": "Merge UV vertices", "icon": "git-merge"},
+  {"name": "Connect UV Faces", "keys": [], "category": "uv", "desc": "Connect adjacent UV faces", "icon": "link"},
+  {"name": "Snap UV to Pixels", "keys": [], "category": "uv", "desc": "Snap UV to pixel grid", "icon": "magnet"},
+  {"name": "Cycle UV", "keys": [], "category": "uv", "desc": "Cycle through UV mappings", "icon": "refresh-cw"},
+  {"name": "Cycle Invert UV", "keys": [], "category": "uv", "desc": "Cycle inverted UV mappings", "icon": "refresh-ccw"},
+  {"name": "UV Overlay", "keys": [], "category": "uv", "desc": "Toggle UV overlay display", "icon": "image"},
+  {"name": "Move Texture with UV", "keys": [], "category": "uv", "desc": "Move texture when adjusting UV", "icon": "move"},
+  
+  // TRANSFORM CATEGORY (47 shortcuts)
+  {"name": "Rotate X -90", "keys": [], "category": "transform", "desc": "Rotate element -90 degrees on X axis", "icon": "rotate-ccw"},
+  {"name": "Rotate Y +90", "keys": [], "category": "transform", "desc": "Rotate element +90 degrees on Y axis", "icon": "rotate-cw"},
+  {"name": "Rotate Y -90", "keys": [], "category": "transform", "desc": "Rotate element -90 degrees on Y axis", "icon": "rotate-ccw"},
+  {"name": "Rotate Z +90", "keys": [], "category": "transform", "desc": "Rotate element +90 degrees on Z axis", "icon": "rotate-cw"},
+  {"name": "Rotate Z -90", "keys": [], "category": "transform", "desc": "Rotate element -90 degrees on Z axis", "icon": "rotate-ccw"},
+  {"name": "Flip X", "keys": [], "category": "transform", "desc": "Flip element on X axis", "icon": "flip-horizontal"},
+  {"name": "Flip Y", "keys": [], "category": "transform", "desc": "Flip element on Y axis", "icon": "flip-vertical"},
+  {"name": "Flip Z", "keys": [], "category": "transform", "desc": "Flip element on Z axis", "icon": "flip-horizontal"},
+  {"name": "Center X", "keys": [], "category": "transform", "desc": "Center element on X axis", "icon": "align-center"},
+  {"name": "Center Y", "keys": [], "category": "transform", "desc": "Center element on Y axis", "icon": "align-center"},
+  {"name": "Center Z", "keys": [], "category": "transform", "desc": "Center element on Z axis", "icon": "align-center"},
+  {"name": "Center Lateral", "keys": [], "category": "transform", "desc": "Center element laterally", "icon": "align-center"},
+  {"name": "Move Up", "keys": ["Ctrl", "Shift", "Up"], "category": "transform", "desc": "Move element up", "icon": "arrow-up"},
+  {"name": "Move Down", "keys": ["Ctrl", "Shift", "Down"], "category": "transform", "desc": "Move element down", "icon": "arrow-down"},
+  {"name": "Move Left", "keys": ["Ctrl", "Shift", "Left"], "category": "transform", "desc": "Move element left", "icon": "arrow-left"},
+  {"name": "Move Right", "keys": ["Ctrl", "Shift", "Right"], "category": "transform", "desc": "Move element right", "icon": "arrow-right"},
+  {"name": "Move Forth", "keys": ["Ctrl", "Shift", "Page Up"], "category": "transform", "desc": "Move element forward", "icon": "arrow-up-circle"},
+  {"name": "Move Back", "keys": ["Ctrl", "Shift", "Page Down"], "category": "transform", "desc": "Move element backward", "icon": "arrow-down-circle"},
+  {"name": "Toggle Visibility", "keys": [], "category": "transform", "desc": "Toggle element visibility", "icon": "eye"},
+  {"name": "Toggle Lock", "keys": [], "category": "transform", "desc": "Toggle element lock state", "icon": "lock"},
+  {"name": "Toggle Export", "keys": [], "category": "transform", "desc": "Toggle element export state", "icon": "file-output"},
+  {"name": "Toggle Auto UV", "keys": [], "category": "transform", "desc": "Toggle automatic UV mapping", "icon": "sparkles"},
+  {"name": "Toggle Shading", "keys": [], "category": "transform", "desc": "Toggle element shading", "icon": "sun"},
+  {"name": "Mirror UV", "keys": [], "category": "transform", "desc": "Mirror UV coordinates", "icon": "flip-horizontal"},
+  {"name": "Update Auto UV", "keys": [], "category": "transform", "desc": "Update automatic UV mapping", "icon": "refresh-cw"},
+  {"name": "Link Stretching", "keys": [], "category": "transform", "desc": "Link texture stretching", "icon": "link"},
+  {"name": "Center Pivot", "keys": [], "category": "transform", "desc": "Center pivot point", "icon": "target"},
+  {"name": "Center Individual Pivots", "keys": [], "category": "transform", "desc": "Center pivots for individual elements", "icon": "target"},
+  {"name": "Reset Bone", "keys": [], "category": "transform", "desc": "Reset bone to default state", "icon": "rotate-ccw"},
+  {"name": "Scale", "keys": [], "category": "transform", "desc": "Scale element", "icon": "maximize"},
+  {"name": "Spline Handle Mode - Aligned", "keys": [], "category": "transform", "desc": "Set spline handle to aligned mode", "icon": "align-start-horizontal"},
+  {"name": "Spline Handle Mode - Mirrored", "keys": [], "category": "transform", "desc": "Set spline handle to mirrored mode", "icon": "align-center"},
+  {"name": "Spline Handle Mode - Free", "keys": [], "category": "transform", "desc": "Set spline handle to free mode", "icon": "move"},
+  {"name": "Move Keyframes Back", "keys": ["Left"], "category": "transform", "desc": "Move keyframes backward in timeline", "icon": "skip-back"},
+  {"name": "Move Keyframes Forth", "keys": ["Right"], "category": "transform", "desc": "Move keyframes forward in timeline", "icon": "skip-forward"},
+  {"name": "Move Keyframe Graph Up", "keys": ["Ctrl", "Shift", "Up"], "category": "transform", "desc": "Move keyframe graph up", "icon": "trending-up"},
+  {"name": "Move Keyframe Graph Down", "keys": ["Ctrl", "Shift", "Down"], "category": "transform", "desc": "Move keyframe graph down", "icon": "trending-down"},
+  {"name": "Position X/Y/Z", "keys": [], "category": "transform", "desc": "Increase/Decrease position values", "icon": "move"},
+  {"name": "Size X/Y/Z", "keys": [], "category": "transform", "desc": "Increase/Decrease size values", "icon": "scaling"},
+  {"name": "Inflate", "keys": [], "category": "transform", "desc": "Increase/Decrease inflation", "icon": "expand"},
+  {"name": "Stretch", "keys": [], "category": "transform", "desc": "Increase/Decrease stretch", "icon": "move-horizontal"},
+  {"name": "Rotation X/Y/Z", "keys": [], "category": "transform", "desc": "Increase/Decrease rotation values", "icon": "rotate-3d"},
+  {"name": "Pivot X/Y/Z", "keys": [], "category": "transform", "desc": "Increase/Decrease pivot values", "icon": "crosshair"},
+  {"name": "Handle Tilt", "keys": [], "category": "transform", "desc": "Increase/Decrease handle tilt", "icon": "move-diagonal"},
+  {"name": "Handle Size", "keys": [], "category": "transform", "desc": "Increase/Decrease handle size", "icon": "ruler"},
+  
+  // TEXTURES CATEGORY (26 shortcuts)
+  {"name": "Import Texture", "keys": ["Ctrl", "T"], "category": "textures", "desc": "Import texture file", "icon": "file-down"},
+  {"name": "Create Texture", "keys": ["Ctrl", "Shift", "T"], "category": "textures", "desc": "Create new texture", "icon": "file-plus"},
+  {"name": "Append Elements to Template", "keys": [], "category": "textures", "desc": "Append elements to template", "icon": "plus"},
+  {"name": "Save Textures", "keys": [], "category": "textures", "desc": "Save all textures", "icon": "save"},
+  {"name": "Change Texture Location", "keys": [], "category": "textures", "desc": "Change texture file location", "icon": "folder"},
+  {"name": "Create Texture Group", "keys": [], "category": "textures", "desc": "Create texture group", "icon": "folder-plus"},
+  {"name": "Create Material", "keys": [], "category": "textures", "desc": "Create new material", "icon": "layers"},
+  {"name": "Generate PBR Map", "keys": [], "category": "textures", "desc": "Generate PBR texture maps", "icon": "box"},
+  {"name": "Play Animated Textures", "keys": [], "category": "textures", "desc": "Play animated texture", "icon": "play"},
+  {"name": "Animated Texture Frame", "keys": [], "category": "textures", "desc": "Increase/Decrease frame", "icon": "film"},
+  {"name": "Animated Texture FPS", "keys": [], "category": "textures", "desc": "Adjust animation FPS", "icon": "gauge"},
+  {"name": "Flipbook Editor", "keys": [], "category": "textures", "desc": "Open flipbook editor", "icon": "book-open"},
+  {"name": "Invert Colors", "keys": [], "category": "textures", "desc": "Invert texture colors", "icon": "contrast"},
+  {"name": "Adjust Brightness & Contrast", "keys": [], "category": "textures", "desc": "Adjust brightness and contrast", "icon": "sun"},
+  {"name": "Adjust Saturation & Hue", "keys": [], "category": "textures", "desc": "Adjust saturation and hue", "icon": "palette"},
+  {"name": "Adjust Curves", "keys": [], "category": "textures", "desc": "Adjust color curves", "icon": "activity"},
+  {"name": "Adjust Opacity", "keys": [], "category": "textures", "desc": "Adjust texture opacity", "icon": "droplet"},
+  {"name": "Limit to Palette", "keys": [], "category": "textures", "desc": "Limit colors to palette", "icon": "swatch-book"},
+  {"name": "Split RGB Channels into Layers", "keys": [], "category": "textures", "desc": "Split RGB channels", "icon": "split"},
+  {"name": "Clear Unused Texture Space", "keys": [], "category": "textures", "desc": "Clear unused space", "icon": "eraser"},
+  {"name": "Flip Horizontally", "keys": [], "category": "textures", "desc": "Flip texture horizontally", "icon": "flip-horizontal"},
+  {"name": "Flip Vertically", "keys": [], "category": "textures", "desc": "Flip texture vertically", "icon": "flip-vertical"},
+  {"name": "Rotate Clockwise", "keys": [], "category": "textures", "desc": "Rotate 90° clockwise", "icon": "rotate-cw"},
+  {"name": "Rotate Counter-clockwise", "keys": [], "category": "textures", "desc": "Rotate 90° counter-clockwise", "icon": "rotate-ccw"},
+  {"name": "Resize Texture", "keys": [], "category": "textures", "desc": "Resize texture dimensions", "icon": "maximize"},
   {"name": "Crop Texture to Selection", "keys": [], "category": "textures", "desc": "Crop to selection", "icon": "crop"},
   
   // LAYERS CATEGORY (8 shortcuts)
@@ -454,6 +608,7 @@ const defaultShortcuts = [
 
 async function loadShortcuts() {
   try {
+    const redis = await getRedis();
     const data = await redis.get(SHORTCUTS_KEY);
     if (data) return data;
     await redis.set(SHORTCUTS_KEY, defaultShortcuts);
@@ -466,6 +621,7 @@ async function loadShortcuts() {
 
 async function saveShortcuts(shortcuts) {
   try {
+    const redis = await getRedis();
     await redis.set(SHORTCUTS_KEY, shortcuts);
     return true;
   } catch (error) {
