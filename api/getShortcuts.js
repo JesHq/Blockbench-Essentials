@@ -1,3 +1,8 @@
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
