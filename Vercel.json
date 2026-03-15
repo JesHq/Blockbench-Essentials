@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/getShortcuts.js": {
+      "maxDuration": 10
+    }
+  }
+}
