@@ -1,34 +1,50 @@
 # Blockbench-Essentials
 
-Blockbench Essentials – 320+ verified shortcuts for Blockbench with instant search, category filters & unique animations showing each action. Covers Edit, Paint, Animate, Display, Tools & General modes including bone rigging, drivers & constraints. Built by JesHQ. Star to support!
+**406 verified shortcuts** for Blockbench with instant search, category filtering, and visual animations. Covers Edit, Paint, Animate, UV, Transform, Navigation, File, View, Select, Textures, Layers, Color, and more.
 
-🔗 **Live Site:** https://jeshq.github.io/blockbench-essentials
+🔗 **[View Live](https://your-vercel-url.vercel.app)**
 
 ---
 
 ## ✨ Features
 
-- **320+ Shortcuts** – Complete reference for all Blockbench categories
-- **Instant Search** – Find any shortcut in milliseconds
-- **Category Filters** – Browse by Edit, Paint, Animation, UV, etc.
-- **Admin Panel** – Securely add/edit shortcuts via Netlify Functions
-- **Mobile Friendly** – Works perfectly on all devices
+- **406 Shortcuts** — Complete reference across all categories
+- **Instant Search** — Find commands in milliseconds
+- **Category Filtering** — Browse by function (Edit, Paint, Animation, etc.)
+- **Secure Admin** — Protected management interface
+- **Responsive Design** — Optimized for all devices
+- **Persistent Storage** — Redis-backed data layer
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Stack
 
 - HTML/CSS/JS (Vanilla)
-- Netlify Functions (Serverless backend)
+- Vercel Serverless Functions
+- Upstash Redis
 - Lucide Icons
-- GitHub Pages + Netlify
 
 ---
 
-## 🔐 Admin Access
+## 🔐 Admin
 
-Visit `/admin.html` on the live site and enter your secret code to manage shortcuts.
+Authorized users can manage shortcuts via the secure admin interface. Contact repository owner for access inquiries.
 
 ---
 
-Built with ❤️ by JesHQ
+## 🚀 Deployment
+
+Vercel + Upstash Redis. Requires three environment variables:
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `ADMIN_CODE`
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
+
+---
+
+Built by **JesHQ**
