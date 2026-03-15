@@ -1,4 +1,8 @@
 {
+  "version": 2,
+  "buildCommand": "npm install --production=false && npm run build",
+  "installCommand": "npm install --production=false",
+  "framework": null,
   "functions": {
     "api/getShortcuts.js": {
       "maxDuration": 10
